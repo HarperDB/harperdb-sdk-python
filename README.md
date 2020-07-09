@@ -237,8 +237,8 @@ Tables can be dropped using the instance method `dog_table.drop()`.
 - **record_count** (int): Number of records in this table
 - **schema** (HarperDBSchema): Instance of the parent schema
 - **updated_time** (datetime.datetime): equal to `__updatedtime__`
-- **\__createdtime\__** (int): Epoch time in milliseconds
-- **\__updatedtime\__** (int): Epoch time in milliseconds
+- **\_\_createdtime\_\_** (int): Epoch time in milliseconds
+- **\_\_updatedtime\_\_** (int): Epoch time in milliseconds
 
 #### Instance Methods:
 
@@ -273,8 +273,8 @@ Records can be deleted using the instance method `penny.delete()`.
 - **created_time** (datetime.datetime): equal to `__createdtime__`
 - **table** (HarperDBTable): Instance of parent table
 - **updated_time** (datetime.datetime): equal to `__updatedtime__`
-- **\__createdtime\__** (int): Epoch time in milliseconds
-- **\__updatedtime\__** (int): Epoch time in milliseconds
+- **\_\_createdtime\_\_** (int): Epoch time in milliseconds
+- **\_\_updatedtime\_\_** (int): Epoch time in milliseconds
 
 #### Instance Methods:
 
