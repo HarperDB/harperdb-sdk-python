@@ -839,7 +839,7 @@ class TestHarperDBSchema(harperdb_testcase.HarperDBTestCase):
         # length is a property read from the server
         self.assertEqual(
             len(schema_2),
-            len(self.DESCRIBE_SCHEMA_2_UPDATED__LEGACY))
+            len(self.DESCRIBE_SCHEMA_2_UPDATED))
         self.assertEqual(len(responses.calls), 4)
 
     @responses.activate
