@@ -264,8 +264,8 @@ Tables can be dropped using the instance method `dog_table.drop()`.
 - **drop()**: Drop this table
 - **search_by_value(search_attribute, search_value)**: Return a list of
 matching `HarperDBRecord` instances.
-- **upsert(record)**: Insert a record from a dictionary, or list of dictionaries. If a value is given for the table's hash_attribute, and this table has a matching record, that record will be updated. Any records skipped by the server will be omitted from the return value.
-- **upsert_from_csv(path)**: Insert records from a CSV file, with headers in the first row. Any records which have a value for the table's hash_attribute will be updated. Any records skipped by the server will be omitted from the return value.
+- **upsert(record)**: Insert a record from a dictionary, or list of dictionaries. If a value is given for the table's hash_attribute, and this table has a matching record, that record will be updated. Any records skipped by the server will be omitted from the return value. Returns `HarperDBRecord`, or a list of `HarperDBRecord` instances.
+- **upsert_from_csv(path)**: Insert records from a CSV file, with headers in the first row. Any records which have a value for the table's `hash_attribute` will be updated. Any records skipped by the server will be omitted from the return value. Returns a list of `HarperDBRecord` instances.
 
 ---
 
