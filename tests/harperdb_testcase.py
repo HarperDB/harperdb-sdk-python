@@ -277,21 +277,21 @@ class HarperDBTestCase(unittest.TestCase):
     RECORD_UPSERTED = {
         'message': 'updated 1 of 1 records',
         'skipped_hashes': [],
-        'updated_hashes': [
+        'update_hashes': [
             '2',
         ],
     }
     RECORD_PART_UPSERTED = {
         'message': 'updated 1 of 2 records',
         'skipped_hashes': [],
-        'updated_hashes': [
+        'update_hashes': [
             '2',
         ],
     }
     RECORDS_UPSERTED = {
         'message': 'updated 2 of 2 records',
         'skipped_hashes': [],
-        'updated_hashes': [
+        'update_hashes': [
             '1',
             '2'
         ],

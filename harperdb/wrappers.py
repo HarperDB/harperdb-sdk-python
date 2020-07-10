@@ -574,7 +574,7 @@ class HarperDBTable():
                 schema=self.schema.name,
                 table=self.name,
                 records=records_to_update)
-            for hash_value in update_return_json['updated_hashes']:
+            for hash_value in update_return_json['update_hashes']:
                 records_updated.append(hash_value)
         record_hashes = records_inserted + records_updated
         if not return_list:
