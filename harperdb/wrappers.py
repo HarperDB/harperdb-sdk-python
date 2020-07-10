@@ -597,7 +597,7 @@ class HarperDBTable():
         updated. Any records skipped by the server will be omitted from the
         return value.
         """
-        # simply pass ile contents to upsert() and return its result
+        # simply pass file contents to upsert() and return its result
         records = list()
         with open(path, newline='') as csv_file:
             csv_reader = csv.DictReader(csv_file)
