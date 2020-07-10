@@ -1192,6 +1192,11 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
+            json=self.RECORD_NOT_INSERTED,
+            status=200)
+        responses.add(
+            'POST',
+            self.URL,
             json=self.RECORD_UPSERTED,
             status=200)
 
@@ -1205,6 +1210,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
                 {'name': 'foo'},
             ],
         })
+        self.assertEqual(len(responses.calls), 1)
         records = self.table.upsert([
             {'name': 'bar'},
             {'name': 'baz'},
@@ -1218,6 +1224,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
                 {'name': 'baz'},
             ],
         })
+        self.assertEqual(len(responses.calls), 2)
         # update a record using its hash value
         updated_record = self.table.upsert({
             self.table.hash_attribute: record._hash_value,
@@ -1236,35 +1243,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         })
 
         self.assertEqual(len(records), 2)
-        self.assertEqual(len(responses.calls), 3)
-
-    @responses.activate
-    def test_upsert_skips(self):
-        """ Records skipped are omitted from return value.
-        """
-        # mock a server response with only 1 of 2 records updated
-        responses.add(
-            'POST',
-            self.URL,
-            json=self.RECORD_PART_UPSERTED,
-            status=200)
-        # mock response to search_by_hash used in to_dict()
-        responses.add(
-            'POST',
-            self.URL,
-            json=self.DOG_RECORD,
-            status=200)
-        records = self.table.upsert(self.DOG_RECORDS)
-        self.assertLastRequestMatchesSpec({
-            'operation': 'update',
-            'schema': self.schema.name,
-            'table': self.table.name,
-            'records': self.DOG_RECORDS,
-        })
-        # if the server skips any records they are omitted from return value
-        self.assertEqual(len(responses.calls), 1)
-        self.assertEqual(len(records), 1)
-        self.assertDictEqual(records[0].to_dict(), self.DOG_RECORD[0])
+        self.assertEqual(len(responses.calls), 4)
 
     @responses.activate
     def test_search_by_value(self):
@@ -1319,17 +1298,17 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
     def test_upsert_from_csv(self):
         """ Records can be upserted from a CSV file path.
         """
-        # mock server response to update request
+        # mock server response to insert request
         responses.add(
             'POST',
             self.URL,
-            json=self.RECORDS_UPSERTED,
+            json=self.RECORDS_INSERTED,
             status=200)
-        # mock server response to insert+update request, missing hash value
+        # mock server response to insert+update request
         responses.add(
             'POST',
             self.URL,
-            json=self.RECORD_INSERTED,
+            json=self.RECORDS_NOT_INSERTED,
             status=200)
         responses.add(
             'POST',
@@ -1339,7 +1318,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
 
         records = self.table.upsert_from_csv('tests/test.csv')
         self.assertLastRequestMatchesSpec({
-            'operation': 'update',
+            'operation': 'insert',
             'schema': self.schema.name,
             'table': self.table.name,
             'records': [
@@ -1360,45 +1339,24 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(len(records), 2)
         for record in records:
             self.assertIsInstance(record, harperdb.wrappers.HarperDBRecord)
-        self.assertEqual(records[0]._hash_value, '1')
-        self.assertEqual(records[1]._hash_value, '2')
+        self.assertEqual(records[0]._hash_value, 'assignedID_2')
+        self.assertEqual(records[1]._hash_value, 'assignedID_3')
         # all sample records have a valid hash value
         self.assertEqual(len(responses.calls), 1)
 
-        # not all records have a valid hash value, insert where needed
-        records = self.table.upsert_from_csv('tests/test_2.csv')
-        self.assertEqual(len(records), 2)
-        for record in records:
-            self.assertIsInstance(record, harperdb.wrappers.HarperDBRecord)
-        self.assertEqual(records[0]._hash_value, 'assignedID_1')
-        self.assertEqual(records[1]._hash_value, '2')
-        # one insert + one update calls
-        self.assertEqual(len(responses.calls), 3)
-
-    @responses.activate
-    def test_upsert_from_csv_skips(self):
-        """ Records skipped are omitted from return value.
-        """
-        # mock a server response with only 1 of 2 records updated
-        responses.add(
-            'POST',
-            self.URL,
-            json=self.RECORD_PART_UPSERTED,
-            status=200)
-        # mock response to search_by_hash used in to_dict()
-        responses.add(
-            'POST',
-            self.URL,
-            json=self.DOG_RECORD,
-            status=200)
+        # one record is inserted, one is updated
         records = self.table.upsert_from_csv('tests/test.csv')
+        self.assertEqual(len(responses.calls), 3)
         self.assertLastRequestMatchesSpec({
             'operation': 'update',
             'schema': self.schema.name,
             'table': self.table.name,
-            'records': self.DOG_RECORDS,
+            'records': [
+                {
+                    'id': '2',
+                    'name': 'Dino',
+                    'age': '3',
+                    'color': 'Gray',
+                },
+            ],
         })
-        # if the server skips any records they are omitted from return value
-        self.assertEqual(len(responses.calls), 1)
-        self.assertEqual(len(records), 1)
-        self.assertDictEqual(records[0].to_dict(), self.DOG_RECORD[0])

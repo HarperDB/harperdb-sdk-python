@@ -266,6 +266,22 @@ class HarperDBTestCase(unittest.TestCase):
             'assignedID_1',
         ],
     }
+    RECORD_NOT_INSERTED = {
+        'message': 'inserted 0 of 1 records',
+        'skipped_hashes': [
+            'assignedID_1',
+        ],
+        'inserted_hashes': [],
+    }
+    RECORDS_NOT_INSERTED = {
+        'message': 'inserted 1 of 2 records',
+        'skipped_hashes': [
+            '2',
+        ],
+        'inserted_hashes': [
+            '1',
+        ],
+    }
     RECORDS_INSERTED = {
         'message': 'inserted 2 of 2 records',
         'skipped_hashes': [],
