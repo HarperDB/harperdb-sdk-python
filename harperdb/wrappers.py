@@ -75,7 +75,6 @@ class HarperDBWrapper():
         self.timeout = timeout
 
     def __getitem__(self, key):
-        # if nothing raised the schema is valid, return it
         return HarperDBSchema(key, self)
 
     def __delitem__(self, key):
