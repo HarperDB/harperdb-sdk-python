@@ -49,6 +49,10 @@ class HarperDB():
                           get_attributes=['*'])
       SQL Operations:
         - sql(SQL)
+      CSV Operations:
+        - csv_data_load(schema, table, path, action="insert")
+      Jobs:
+        - get_job(id)
     """
 
     def __init__(self, url, username=None, password=None, timeout=10):
@@ -200,4 +204,25 @@ class HarperDB():
         return self.__make_request({
             'operation': 'sql',
             'sql': sql_string,
+        })
+
+    # CSV Operations
+
+    def csv_data_load(self, schema, table, path, action='insert'):
+        with open(path) as csv_file:
+            data = csv_file.read()
+        return self.__make_request({
+            'operation': 'csv_data_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'data': data,
+        })
+
+    # Jobs
+
+    def get_job(self, id):
+        return self.__make_request({
+            'operation': 'get_job',
+            'id': id,
         })

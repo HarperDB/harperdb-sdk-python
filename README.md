@@ -70,6 +70,14 @@ SQL Operations:
 
 - **sql(SQL)**
 
+CSV Operations:
+
+- **csv_data_load(schema, table, path, action="insert")**
+
+Jobs:
+
+- **get_job(id)**
+
 ---
 
 # harperdb.wrappers.HarperDBWrapper
