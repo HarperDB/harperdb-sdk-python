@@ -1,4 +1,5 @@
 import base64
+import csv
 import datetime
 import json
 import requests
@@ -255,6 +256,30 @@ class HarperDBWrapper():
             'sql': sql_string,
         })
 
+    # Low-Level Methods
+    # CSV Operations
+
+    def _csv_data_load(self, schema, table, path, action='insert'):
+        with open(path) as csv_file:
+            data = csv_file.read()
+        return self.__make_request({
+            'operation': 'csv_data_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'data': data,
+        })
+
+    # Low-Level Methods
+    # Jobs
+
+    def _get_job(self, id):
+        return self.__make_request({
+            'operation': 'get_job',
+            'id': id,
+        })
+
+
 
 class HarperDBRecord():
 
@@ -448,9 +473,14 @@ class HarperDBTable():
       - drop(): Drop this table
       - search_by_value(search_attribute, search_value): Return a list of
         matching HarperDBRecord instances.
-      - upsert(record): Insert a record from a dictionary. If the table's
-        hash_attribute is in this dictionary, and this table has a matching
-        record, that record will be updated. Accepts a list of dictionaries.
+      - upsert(record): Insert a record from a dictionary, or list of
+        dictionaries. If the a value is given for the table's hash_attribute,
+        and this table has a matching record, that record will be updated. Any
+        records skipped by the server will be omitted from the return value.
+      - upsert_from_csv(path): Insert records from a CSV file, with headers in
+        the first row. Any records which have a value for the table's
+        hash_attribute will be updated. Any records skipped by the server will
+        be omitted from the return value.
     """
 
     def __init__(self, name, schema, hash_attribute=None):
@@ -513,54 +543,67 @@ class HarperDBTable():
         return return_value
 
     def upsert(self, records):
-        """ Insert record(s) from a dictionary, or a list of dictionaries. If
-        the source dictionary contains a key matching the table's
-        hash_attribute an update will be performed.
+        """ Insert a record from a dictionary, or list of dictionaries. If a
+        value is given for the table's hash_attribute, and this table has a
+        matching record, that record will be updated. Any records skipped by
+        the server will be omitted from the return value.
         """
+        # list in, list out
         return_list = True
         if not isinstance(records, list):
             records = [records]
             return_list = False
-        # records with hash_attribute need to be updated, else inserted
-        records_to_insert = []
-        records_to_update = []
-        for record in records:
-            if self.hash_attribute in record:
-                records_to_update.append(record)
-            else:
-                records_to_insert.append(record)
-        records_inserted = []
-        records_updated = []
-        if records_to_insert:
-            insert_return_json = self.schema.database._insert(
-                schema=self.schema.name,
-                table=self.name,
-                records=records_to_insert)
-            for hash_value in insert_return_json['inserted_hashes']:
-                records_inserted.append(hash_value)
-        if records_to_update:
+        # insert records
+        insert_return_json = self.schema.database._insert(
+            schema=self.schema.name,
+            table=self.name,
+            records=records)
+        inserted_hashes = insert_return_json['inserted_hashes']
+        inserted_hashes = [str(hash) for hash in inserted_hashes]
+        upserted_hashes = inserted_hashes
+        skipped_hashes = insert_return_json['skipped_hashes']
+        skipped_hashes = [str(hash) for hash in skipped_hashes]
+        # any skipped records need to be updated
+        if skipped_hashes:
+            # make a list of records to update
+            records_to_update = list()
+            for record in records:
+                if record.get(self.hash_attribute) in skipped_hashes:
+                    records_to_update.append(record)
             update_return_json = self.schema.database._update(
                 schema=self.schema.name,
                 table=self.name,
                 records=records_to_update)
-            for hash_value in update_return_json['updated_hashes']:
-                records_updated.append(hash_value)
-        record_hashes = records_inserted + records_updated
+            upserted_hashes += update_return_json['update_hashes']
         if not return_list:
-            if record_hashes:
-                # return a single record
+            # return a single record
+            if upserted_hashes:
                 return HarperDBRecord(
                     table=self,
-                    hash_value=record_hashes[0])
+                    hash_value=upserted_hashes[0])
             # else, the record was skipped
             return
-        # else, return a list of records
+        # return a list of records
         return_value = list()
-        for hash_value in record_hashes:
+        for hash_value in upserted_hashes:
             return_value.append(HarperDBRecord(
                 table=self,
                 hash_value=hash_value))
         return return_value
+
+    def upsert_from_csv(self, path):
+        """ Insert records from a CSV file, with headers in the first row. Any
+        records which have a value for the table's hash_attribute will be
+        updated. Any records skipped by the server will be omitted from the
+        return value.
+        """
+        # simply pass file contents to upsert() and return its result
+        records = list()
+        with open(path, newline='') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                records.append(row)
+        return self.upsert(records)
 
     @property
     def attributes(self):

@@ -499,6 +499,102 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
+    @responses.activate
+    def test_csv_data_load(self):
+        """ Records are inserted from a CSV file path.
+        """
+        # define the expected JSON body in POST request
+        with open('tests/test.csv') as csv_file:
+            csv_string = csv_file.read()
+        spec = {
+            'operation': 'csv_data_load',
+            'action': 'insert',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'data': csv_string,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_data_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            path='tests/test.csv')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_csv_data_load_update(self):
+        """ Records are updated from a CSV file path.
+        """
+        # define the expected JSON body in POST request
+        with open('tests/test.csv') as csv_file:
+            csv_string = csv_file.read()
+        spec = {
+            'operation': 'csv_data_load',
+            'action': 'update',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'data': csv_string,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_data_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            path='tests/test.csv',
+            action='update')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_get_job(self):
+        """ Returns a job dictionary from an id.
+        """
+        spec = {
+            'operation': 'get_job',
+            'id': 'aUniqueID',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=[
+                {
+                    '__createdtime__': 1234567890000,
+                    '__updatedtime__': 1234567890002,
+                    'created_datetime': 1234567890004,
+                    'end_datetime': 1234567890008,
+                    'id': 'aUniqueID',
+                    'job_body': None,
+                    'message': 'successfully loaded 2 of 2 records',
+                    'start_datetime': 1234567890006,
+                    'status': 'COMPLETE',
+                    'type': 'csv_data_load',
+                    'user': None,
+                    'start_datetime_converted': 'ISO 8601',
+                    'end_datetime_converted': 'ISO 8601'
+                }
+            ],
+            status=200)
+
+        self.db.get_job(spec['id'])
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
 
 class TestHarperDBError(harperdb_testcase.HarperDBTestCase):
 

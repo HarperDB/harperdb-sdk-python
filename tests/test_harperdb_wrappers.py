@@ -714,7 +714,7 @@ class TestHarperDBRecord(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=self.RECORD_UPDATED,
+            json=self.RECORD_UPSERTED,
             status=200)
         # mock server repsonse to search_by_hash in __getitem__
         responses.add(
@@ -1192,7 +1192,12 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=self.RECORD_UPDATED,
+            json=self.RECORD_NOT_INSERTED,
+            status=200)
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORD_UPSERTED,
             status=200)
 
         # insert records without hash_attribute
@@ -1205,6 +1210,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
                 {'name': 'foo'},
             ],
         })
+        self.assertEqual(len(responses.calls), 1)
         records = self.table.upsert([
             {'name': 'bar'},
             {'name': 'baz'},
@@ -1218,6 +1224,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
                 {'name': 'baz'},
             ],
         })
+        self.assertEqual(len(responses.calls), 2)
         # update a record using its hash value
         updated_record = self.table.upsert({
             self.table.hash_attribute: record._hash_value,
@@ -1236,7 +1243,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         })
 
         self.assertEqual(len(records), 2)
-        self.assertEqual(len(responses.calls), 3)
+        self.assertEqual(len(responses.calls), 4)
 
     @responses.activate
     def test_search_by_value(self):
@@ -1286,3 +1293,70 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(
             updated_time.timestamp(),
             self.DESCRIBE_TABLE['__updatedtime__'] / 1000)
+
+    @responses.activate
+    def test_upsert_from_csv(self):
+        """ Records can be upserted from a CSV file path.
+        """
+        # mock server response to insert request
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORDS_INSERTED,
+            status=200)
+        # mock server response to insert+update request
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORDS_NOT_INSERTED,
+            status=200)
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORD_UPSERTED,
+            status=200)
+
+        records = self.table.upsert_from_csv('tests/test.csv')
+        self.assertLastRequestMatchesSpec({
+            'operation': 'insert',
+            'schema': self.schema.name,
+            'table': self.table.name,
+            'records': [
+                {
+                    'id': '1',
+                    'name': 'Duke',
+                    'age': '5',
+                    'color': 'Brown',
+                },
+                {
+                    'id': '2',
+                    'name': 'Dino',
+                    'age': '3',
+                    'color': 'Gray',
+                },
+            ],
+        })
+        self.assertEqual(len(records), 2)
+        for record in records:
+            self.assertIsInstance(record, harperdb.wrappers.HarperDBRecord)
+        self.assertEqual(records[0]._hash_value, 'assignedID_2')
+        self.assertEqual(records[1]._hash_value, 'assignedID_3')
+        # all sample records have a valid hash value
+        self.assertEqual(len(responses.calls), 1)
+
+        # one record is inserted, one is updated
+        records = self.table.upsert_from_csv('tests/test.csv')
+        self.assertEqual(len(responses.calls), 3)
+        self.assertLastRequestMatchesSpec({
+            'operation': 'update',
+            'schema': self.schema.name,
+            'table': self.table.name,
+            'records': [
+                {
+                    'id': '2',
+                    'name': 'Dino',
+                    'age': '3',
+                    'color': 'Gray',
+                },
+            ],
+        })

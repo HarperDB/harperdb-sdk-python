@@ -70,6 +70,14 @@ SQL Operations:
 
 - **sql(SQL)**
 
+CSV Operations:
+
+- **csv_data_load(schema, table, path, action="insert")**
+
+Jobs:
+
+- **get_job(id)**
+
 ---
 
 # harperdb.wrappers.HarperDBWrapper
@@ -142,6 +150,14 @@ SQL Operations:
 
 - **_sql(SQL)**
 
+CSV Operations:
+
+- **_csv_data_load(schema, table, path, action="insert")**
+
+Jobs:
+
+- **_get_job(id)**
+
 ---
 
 # harperdb.wrappers.HarperDBSchema
@@ -209,6 +225,8 @@ dog_table.schema  # returns dev_schema
 
 `HarperDBTable.upsert` accepts either a dictionary of record data, or a list of such dictionaries, returning an instance of `HarperDBRecord` for each record. Any records skipped by the server are omitted from the return value.
 
+Use `HarperDBTable.upsert_from_csv` to load record data in bulk from a CSV file. Returns an instance of `HarperDBRecord` for each record. Any records skipped by the server are omitted from the return value.
+
 Records can be deleted using `HarperDBTable.delete`, or using the `del` keyword and `HarperDBTable.hash_attribute` value like a dictionary:
 
 ```
@@ -246,7 +264,8 @@ Tables can be dropped using the instance method `dog_table.drop()`.
 - **drop()**: Drop this table
 - **search_by_value(search_attribute, search_value)**: Return a list of
 matching `HarperDBRecord` instances.
-- **upsert(record)**: Insert a record from a dictionary. If the table's `hash_attribute` is in this dictionary, and this table has a matching record, that record will be updated. Accepts a list of dictionaries. Returns `HarperDBRecord`
+- **upsert(record)**: Insert a record from a dictionary, or list of dictionaries. If a value is given for the table's hash_attribute, and this table has a matching record, that record will be updated. Any records skipped by the server will be omitted from the return value. Returns `HarperDBRecord`, or a list of `HarperDBRecord` instances.
+- **upsert_from_csv(path)**: Insert records from a CSV file, with headers in the first row. Any records which have a value for the table's `hash_attribute` will be updated. Any records skipped by the server will be omitted from the return value. Returns a list of `HarperDBRecord` instances.
 
 ---
 

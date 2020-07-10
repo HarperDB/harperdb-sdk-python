@@ -266,6 +266,22 @@ class HarperDBTestCase(unittest.TestCase):
             'assignedID_1',
         ],
     }
+    RECORD_NOT_INSERTED = {
+        'message': 'inserted 0 of 1 records',
+        'skipped_hashes': [
+            'assignedID_1',
+        ],
+        'inserted_hashes': [],
+    }
+    RECORDS_NOT_INSERTED = {
+        'message': 'inserted 1 of 2 records',
+        'skipped_hashes': [
+            '2',
+        ],
+        'inserted_hashes': [
+            '1',
+        ],
+    }
     RECORDS_INSERTED = {
         'message': 'inserted 2 of 2 records',
         'skipped_hashes': [],
@@ -274,13 +290,51 @@ class HarperDBTestCase(unittest.TestCase):
             'assignedID_3',
         ],
     }
-    RECORD_UPDATED = {
+    RECORD_UPSERTED = {
         'message': 'updated 1 of 1 records',
         'skipped_hashes': [],
-        'updated_hashes': [
-            'assignedID_1',
+        'update_hashes': [
+            '2',
         ],
     }
+    RECORD_PART_UPSERTED = {
+        'message': 'updated 1 of 2 records',
+        'skipped_hashes': [],
+        'update_hashes': [
+            '2',
+        ],
+    }
+    RECORDS_UPSERTED = {
+        'message': 'updated 2 of 2 records',
+        'skipped_hashes': [],
+        'update_hashes': [
+            '1',
+            '2'
+        ],
+    }
+    DOG_RECORD = [
+        {
+            'id': '2',
+            'name': 'Dino',
+            'age': '3',
+            'color': 'Gray',
+        },
+    ]
+    DOG_RECORDS = [
+        {
+            'id': '1',
+            'name': 'Duke',
+            'age': '5',
+            'color': 'Brown',
+        },
+        {
+            'id': '2',
+            'name': 'Dino',
+            'age': '3',
+            'color': 'Gray',
+        },
+    ]
+
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made
