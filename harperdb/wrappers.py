@@ -625,7 +625,6 @@ class _HarperDBSchemas():
     """
 
     def __init__(self, schemas):
-        assert isinstance(schemas, dict)
         self.schemas = schemas
         self.schema_list = list(self.schemas)
         self.schema_list_index = 0
