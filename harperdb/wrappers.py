@@ -1,4 +1,5 @@
 import base64
+import csv
 import datetime
 import json
 import requests
@@ -255,6 +256,30 @@ class HarperDBWrapper():
             'sql': sql_string,
         })
 
+    # Low-Level Methods
+    # CSV Operations
+
+    def _csv_data_load(self, schema, table, path, action='insert'):
+        with open(path) as csv_file:
+            data = csv_file.read()
+        return self.__make_request({
+            'operation': 'csv_data_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'data': data,
+        })
+
+    # Low-Level Methods
+    # Jobs
+
+    def _get_job(self, id):
+        return self.__make_request({
+            'operation': 'get_job',
+            'id': id,
+        })
+
+
 
 class HarperDBRecord():
 
@@ -448,9 +473,14 @@ class HarperDBTable():
       - drop(): Drop this table
       - search_by_value(search_attribute, search_value): Return a list of
         matching HarperDBRecord instances.
-      - upsert(record): Insert a record from a dictionary. If the table's
-        hash_attribute is in this dictionary, and this table has a matching
-        record, that record will be updated. Accepts a list of dictionaries.
+      - upsert(record): Insert a record from a dictionary, or list of
+        dictionaries. If the a value is given for the table's hash_attribute,
+        and this table has a matching record, that record will be updated. Any
+        records skipped by the server will be omitted from the return value.
+      - upsert_from_csv(path): Insert records from a CSV file, with headers in
+        the first row. Any records which have a value for the table's
+        hash_attribute will be updated. Any records skipped by the server will
+        be omitted from the return value.
     """
 
     def __init__(self, name, schema, hash_attribute=None):
@@ -513,9 +543,10 @@ class HarperDBTable():
         return return_value
 
     def upsert(self, records):
-        """ Insert record(s) from a dictionary, or a list of dictionaries. If
-        the source dictionary contains a key matching the table's
-        hash_attribute an update will be performed.
+        """ Insert a record from a dictionary, or list of dictionaries. If a
+        value is given for the table's hash_attribute, and this table has a
+        matching record, that record will be updated. Any records skipped by
+        the server will be omitted from the return value.
         """
         return_list = True
         if not isinstance(records, list):
@@ -525,7 +556,7 @@ class HarperDBTable():
         records_to_insert = []
         records_to_update = []
         for record in records:
-            if self.hash_attribute in record:
+            if record.get(self.hash_attribute, False):
                 records_to_update.append(record)
             else:
                 records_to_insert.append(record)
@@ -561,6 +592,21 @@ class HarperDBTable():
                 table=self,
                 hash_value=hash_value))
         return return_value
+
+    def upsert_from_csv(self, path):
+        """ Insert records from a CSV file, with headers in the first row. Any
+        records which have a value for the table's hash_attribute will be
+        updated. Any records skipped by the server will be omitted from the
+        return value.
+        """
+        # upsert() already does a thorough job of sorting and returning
+        # records, simply pass it the file contents and return its result
+        records = list()
+        with open(path, newline='') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                records.append(row)
+        return self.upsert(records)
 
     @property
     def attributes(self):
