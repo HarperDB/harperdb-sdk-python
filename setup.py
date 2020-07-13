@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="HarperDB SDK",
-    version="0.2.0",
+    name="harperdb",
+    version="0.3.0",
     author="Tom Young",
     author_email="shadetreemetalworks@gmail.com",
     maintainer="HarperDB",
