@@ -64,6 +64,12 @@ class HarperDBWrapper():
                            get_attributes=['*'])
       SQL Operations:
         - _sql(SQL)
+      CSV Operations:
+        - _csv_data_load(schema, table, path, action="insert")
+        - _csv_file_load(schema, table, file_path, action="insert")
+        - _csv_url_load(schema, table, csv_url, action="insert")
+      Jobs:
+        - _get_job(id)
     """
 
     def __init__(self, url, username=None, password=None, timeout=10):
@@ -268,6 +274,25 @@ class HarperDBWrapper():
             'schema': schema,
             'table': table,
             'data': data,
+        })
+
+
+    def _csv_file_load(self, schema, table, file_path, action='insert'):
+        return self.__make_request({
+            'operation': 'csv_file_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'file_path': file_path,
+        })
+
+    def _csv_url_load(self, schema, table, csv_url, action='insert'):
+        return self.__make_request({
+            'operation': 'csv_url_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'csv_url': csv_url,
         })
 
     # Low-Level Methods
