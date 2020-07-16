@@ -51,6 +51,8 @@ class HarperDB():
         - sql(SQL)
       CSV Operations:
         - csv_data_load(schema, table, path, action="insert")
+        - csv_file_load(schema, table, file_path, action="insert")
+        - csv_url_load(schema, table, csv_url, action="insert")
       Jobs:
         - get_job(id)
     """
@@ -217,6 +219,24 @@ class HarperDB():
             'schema': schema,
             'table': table,
             'data': data,
+        })
+
+    def csv_file_load(self, schema, table, file_path, action='insert'):
+        return self.__make_request({
+            'operation': 'csv_file_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'file_path': file_path,
+        })
+
+    def csv_url_load(self, schema, table, csv_url, action='insert'):
+        return self.__make_request({
+            'operation': 'csv_url_load',
+            'action': action,
+            'schema': schema,
+            'table': table,
+            'csv_url': csv_url,
         })
 
     # Jobs

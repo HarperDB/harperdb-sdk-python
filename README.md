@@ -73,6 +73,8 @@ SQL Operations:
 CSV Operations:
 
 - **csv_data_load(schema, table, path, action="insert")**
+- **csv_file_load(schema, table, file_path, action="insert")**
+- **csv_url_load(schema, table, csv_url, action="insert")**
 
 Jobs:
 

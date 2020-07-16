@@ -561,6 +561,116 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(len(responses.calls), 1)
 
     @responses.activate
+    def test_csv_file_load(self):
+        """ Records are inserted from a CSV file path on the HarperDB host.
+        """
+        spec = {
+            'operation': 'csv_file_load',
+            'action': 'insert',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'file_path': 'path/to/file/on/host.csv',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_file_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            file_path='path/to/file/on/host.csv')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_csv_file_load_update(self):
+        """ Records are updated from a CSV file path on the HarperDB host.
+        """
+        spec = {
+            'operation': 'csv_file_load',
+            'action': 'update',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'file_path': 'path/to/file/on/host.csv',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_file_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            file_path='path/to/file/on/host.csv',
+            action='update')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_csv_url_load(self):
+        """ Records are inserted from a CSV file at a URL.
+        """
+        spec = {
+            'operation': 'csv_url_load',
+            'action': 'insert',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'csv_url': 'example.com/test.csv',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_url_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            csv_url='example.com/test.csv')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_csv_url_load_update(self):
+        """ Records are updated from a CSV file at a URL.
+        """
+        spec = {
+            'operation': 'csv_url_load',
+            'action': 'update',
+            'schema': 'test_schema',
+            'table': 'test_table',
+            'csv_url': 'example.com/test.csv',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json={
+                'message': 'Starting job with id aUniqueID'
+            },
+            status=200)
+
+        self.db.csv_url_load(
+            schema=spec['schema'],
+            table=spec['table'],
+            csv_url='example.com/test.csv',
+            action='update')
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
     def test_get_job(self):
         """ Returns a job dictionary from an id.
         """
