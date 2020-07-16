@@ -158,7 +158,6 @@ CSV Operations:
 - **_csv_file_load(schema, table, file_path, action="insert")**
 - **_csv_url_load(schema, table, csv_url, action="insert")**
 
-
 Jobs:
 
 - **_get_job(id)**
