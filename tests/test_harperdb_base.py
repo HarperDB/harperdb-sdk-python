@@ -10,7 +10,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
     def setUp(self):
         """ This method is called before each test.
         """
-        self.db = harperdb.HarperDB(self.URL)
+        self.db = harperdb.HarperDBBase(self.URL)
+
+    def tearDown(self):
+        """ This method is called after each test.
+        """
+        responses.reset()
 
     @unittest.mock.patch('base64.b64encode')
     def test_create_harperdb_base_with_kwargs(self, mock_b64encode):
@@ -700,5 +705,233 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             status=200)
 
         self.db._get_job(spec['id'])
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_user(self):
+        """ Add a user.
+        """
+        spec = {
+            'operation': 'add_user',
+            'role': 'aUniqueID',
+            'username': 'user',
+            'password': 'pass',
+            'active': True,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_user(
+                role=spec['role'],
+                username=spec['username'],
+                password=spec['password']),
+            self.USER_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_alter_user(self):
+        """ Alter a user.
+        """
+        spec = {
+            'operation': 'alter_user',
+            'role': 'aUniqueID',
+            'username': 'user',
+            'password': 'pass',
+            'active': False,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_ALTERED,
+            status=200)
+
+        self.assertEqual(
+            self.db._alter_user(
+                role=spec['role'],
+                username=spec['username'],
+                password=spec['password'],
+                active=False),
+            self.USER_ALTERED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_drop_user(self):
+        """ Drop a user.
+        """
+        spec = {
+            'operation': 'drop_user',
+            'username': 'user',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_DROPPED,
+            status=200)
+
+        self.assertEqual(
+            self.db._drop_user(username=spec['username']),
+            self.USER_DROPPED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_user_info(self):
+        """ Get user info.
+        """
+        spec = {
+            'operation': 'user_info',
+            'username': 'user',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_INFO,
+            status=200)
+
+        self.assertEqual(
+            self.db._user_info(username=spec['username']),
+            self.USER_INFO)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_list_users(self):
+        """ List users.
+        """
+        spec = {
+            'operation': 'list_users',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.LIST_USERS,
+            status=200)
+
+        self.assertEqual(
+            self.db._list_users(),
+            self.LIST_USERS)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_role(self):
+        """ Add a role.
+        """
+        spec = {
+            'operation': 'add_role',
+            'role': 'developer',
+            'permission': {
+                'super_user': False,
+                'dev':{
+                    'tables': {
+                            'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions':[]
+                        }
+                    }
+                }
+            }
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.ADD_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_role(role='developer', permission=spec['permission']),
+            self.ADD_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_alter_role(self):
+        """ Add a role.
+        """
+        spec = {
+            'operation': 'alter_role',
+            'id': 'aUniqueID',
+            'permission': {
+                'super_user': False,
+                'dev':{
+                    'tables': {
+                            'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions':[]
+                        }
+                    }
+                }
+            }
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.ALTER_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._alter_role(id='aUniqueID', permission=spec['permission']),
+            self.ALTER_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_drop_role(self):
+        """ Drop a role.
+        """
+        spec = {
+            'operation': 'drop_role',
+            'id': 'aUniqueID',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.DROP_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._drop_role(id='aUniqueID'),
+            self.DROP_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_list_roles(self):
+        """List Roles.
+        """
+        spec = {
+            'operation': 'list_roles',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.LIST_ROLES,
+            status=200)
+
+        self.assertEqual(
+            self.db._list_roles(),
+            self.LIST_ROLES)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)

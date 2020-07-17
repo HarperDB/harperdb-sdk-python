@@ -49,6 +49,16 @@ class HarperDB(HarperDBBase):
         - csv_data_load(schema, table, path, action="insert")
         - csv_file_load(schema, table, file_path, action="insert")
         - csv_url_load(schema, table, csv_url, action="insert")
+      Users and Roles:
+        - add_user(role id, username, password, active=True)
+        - add_role(name, permission)
+        - alter_user(role, username, password, active=True)
+        - alter_role(id, permission)
+        - drop_role(id)
+        - drop_user(username)
+        - user_info(username)
+        - list_roles()
+        - list_users()
       Jobs:
         - get_job(id)
     """
@@ -73,3 +83,12 @@ class HarperDB(HarperDBBase):
         self.csv_file_load = self._csv_file_load
         self.csv_url_load = self._csv_url_load
         self.get_job = self._get_job
+        self.add_user = self._add_user
+        self.add_role = self._add_role
+        self.alter_user = self._alter_user
+        self.alter_role = self._alter_role
+        self.drop_role = self._drop_role
+        self.drop_user = self._drop_user
+        self.user_info = self._user_info
+        self.list_roles = self._list_roles
+        self.list_users = self._list_users

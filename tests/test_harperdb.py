@@ -30,3 +30,12 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         db.csv_file_load
         db.csv_url_load
         db.get_job
+        db.add_user
+        db.add_role
+        db.alter_user
+        db.alter_role
+        db.drop_role
+        db.drop_user
+        db.user_info
+        db.list_roles
+        db.list_users

@@ -192,6 +192,66 @@ class HarperDBBase():
             'csv_url': csv_url,
         })
 
+    # Users and Roles
+
+    def _add_user(self, role, username, password, active=True):
+        return self.__make_request({
+            'operation': 'add_user',
+            'role': role,
+            'username': username,
+            'password': password,
+            'active': active,
+        })
+
+    def _alter_user(self, role, username, password, active=True):
+        return self.__make_request({
+            'operation': 'alter_user',
+            'role': role,
+            'username': username,
+            'password': password,
+            'active': active,
+        })
+
+    def _drop_user(self, username):
+        return self.__make_request({
+            'operation': 'drop_user',
+            'username': username,
+        })
+
+    def _user_info(self, username):
+        return self.__make_request({
+            'operation': 'user_info',
+            'username': username,
+        })
+
+    def _list_users(self):
+        return self.__make_request({'operation': 'list_users'})
+
+    def _add_role(self, role, permission):
+        return self.__make_request({
+            'operation': 'add_role',
+            'role': role,
+            'permission': permission,
+        })
+
+    def _alter_role(self, id, permission):
+        return self.__make_request({
+            'operation': 'alter_role',
+            'id': id,
+            'permission': permission,
+        })
+
+    def _drop_role(self, id):
+        return self.__make_request({
+            'operation': 'drop_role',
+            'id': id,
+        })
+
+    def _list_roles(self):
+        return self.__make_request({
+            'operation': 'list_roles',
+        })
+
     # Jobs
 
     def _get_job(self, id):

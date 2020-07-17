@@ -65,6 +65,16 @@ class HarperDBWrapper(HarperDBBase):
         - _csv_data_load(schema, table, path, action="insert")
         - _csv_file_load(schema, table, file_path, action="insert")
         - _csv_url_load(schema, table, csv_url, action="insert")
+      Users and Roles:
+        - _add_user(role id, username, password, active=True)
+        - _add_role(name, permission)
+        - _alter_user(role, username, password, active=True)
+        - _alter_role(id, permission)
+        - _drop_role(id)
+        - _drop_user(username)
+        - _user_info(username)
+        - _list_roles()
+        - _list_users()
       Jobs:
         - _get_job(id)
     """

@@ -334,6 +334,105 @@ class HarperDBTestCase(unittest.TestCase):
             'color': 'Gray',
         },
     ]
+    USER_ADDED = {
+        'message': 'user successfully added',
+    }
+    USER_ALTERED = {
+        "message": "updated 1 of 1 records",
+        "skipped_hashes": [],
+        "new_attributes": [],
+        "update_hashes": [
+            "user"
+        ]
+    }
+    USER_DROPPED = {
+        "message": "user successfully deleted"
+    }
+    USER_INFO = {
+        "__createdtime__": 1234567890000,
+        "__updatedtime__": 1234567890002,
+        "active": True,
+        "role": {
+            "__createdtime__": 1234567890000,
+            "__updatedtime__": 1234567890002,
+            "id": "aUniqueID",
+            "permission": {
+                "super_user": False
+            },
+            "role": "developer"
+        },
+        "username": "user"
+    }
+    LIST_USERS = [
+        {
+            "__createdtime__": 1234567890000,
+            "__updatedtime__": 1234567890002,
+            "active": True,
+            "role": {
+                "__createdtime__": 1234567890000,
+                "__updatedtime__": 1234567890002,
+                "id": "aUniqueID",
+                "permission": {
+                    "super_user": False
+                },
+                "role": "developer"
+            },
+            "username": "user"
+        }
+    ]
+    ADD_ROLE = {
+        'role': 'developer',
+        'permission': {
+            'super_user': False,
+            'dev': {
+                'tables': {
+                    'dog': {
+                        'read': True,
+                        'insert': True,
+                        'update': True,
+                        'delete': False,
+                        'attribute_restrictions': [],
+                    },
+                },
+            },
+        },
+        'id': 'aUniqueID',
+        '__updatedtime__': 1234567890000,
+        '__createdtime__': 1234567890002,
+    }
+    ALTER_ROLE = {
+        "message": "updated 1 of 1 records",
+        "skipped_hashes": [],
+        "new_attributes": [],
+        "update_hashes": [
+            "1ef29958-7c9b-4aad-a4f5-12e72f989758"
+        ]
+    }
+    DROP_ROLE = {
+        "message": "developer successfully deleted"
+    }
+    LIST_ROLES = [
+        {
+            'role': 'developer',
+            'permission': {
+                'super_user': False,
+                'dev': {
+                    'tables': {
+                        'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions': [],
+                        },
+                    },
+                },
+            },
+            'id': 'aUniqueID',
+            '__updatedtime__': 1234567890000,
+            '__createdtime__': 1234567890002,
+        }
+    ]
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

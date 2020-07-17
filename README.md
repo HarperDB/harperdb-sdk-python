@@ -76,6 +76,18 @@ CSV Operations:
 - **csv_file_load(schema, table, file_path, action="insert")**
 - **csv_url_load(schema, table, csv_url, action="insert")**
 
+Users and Roles:
+
+- **add_user(role id, username, password, active=True)**
+- **add_role(name, permission)**
+- **alter_user(role, username, password, active=True)**
+- **alter_role(id, permission)**
+- **drop_role(id)**
+- **drop_user(username)**
+- **user_info(username)**
+- **list_roles()**
+- **list_users()**
+
 Jobs:
 
 - **get_job(id)**
@@ -157,6 +169,18 @@ CSV Operations:
 - **_csv_data_load(schema, table, path, action="insert")**
 - **_csv_file_load(schema, table, file_path, action="insert")**
 - **_csv_url_load(schema, table, csv_url, action="insert")**
+
+Users and Roles:
+
+- **_add_user(role id, username, password, active=True)**
+- **_add_role(name, permission)**
+- **_alter_user(role, username, password, active=True)**
+- **_alter_role(id, permission)**
+- **_drop_role(id)**
+- **_drop_user(username)**
+- **_user_info(username)**
+- **_list_roles()**
+- **_list_users()**
 
 Jobs:
 
