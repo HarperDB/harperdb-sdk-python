@@ -252,6 +252,51 @@ class HarperDBBase():
             'operation': 'list_roles',
         })
 
+    # Clustering
+
+    def _add_node(self, name, host, port, subscriptions=None):
+        if subscriptions:
+            return self.__make_request({
+                'operation': 'add_node',
+                'name': name,
+                'host': host,
+                'port': port,
+                'subscriptions': subscriptions,
+            })
+        return self.__make_request({
+            'operation': 'add_node',
+            'name': name,
+            'host': host,
+            'port': port,
+        })
+
+    def _update_node(self, name, host, port, subscriptions=None):
+        if subscriptions:
+            return self.__make_request({
+                'operation': 'update_node',
+                'name': name,
+                'host': host,
+                'port': port,
+                'subscriptions': subscriptions,
+            })
+        return self.__make_request({
+            'operation': 'update_node',
+            'name': name,
+            'host': host,
+            'port': port,
+        })
+
+    def _remove_node(self, name):
+        return self.__make_request({
+            'operation': 'remove_node',
+            'name': name,
+        })
+
+    def _cluster_status(self):
+        return self.__make_request({
+            'operation': 'cluster_status',
+        })
+
     # Jobs
 
     def _get_job(self, id):

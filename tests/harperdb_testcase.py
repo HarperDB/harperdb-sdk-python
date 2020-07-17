@@ -456,6 +456,19 @@ class HarperDBTestCase(unittest.TestCase):
     DROP_ATTRIBUTE = {
         'message': 'successfully deleted attribute',
     }
+    NODE_ADDED = {
+        "message": "successfully added node to manifest"
+    }
+    NODE_UPDATED = {
+        "message": "successfully updated dummy"
+    }
+    CLUSTER_STATUS = {
+        "is_enabled": False,
+        "node_name": 0
+    }
+    NODE_REMOVED = {
+        "message": "successfully removed node from manifest"
+    }
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

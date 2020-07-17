@@ -59,6 +59,11 @@ class HarperDB(HarperDBBase):
         - user_info(username)
         - list_roles()
         - list_users()
+      Clustering:
+        - add_node(name, host, port, subscriptions)
+        - update_node(name, host, port, subscriptions)
+        - remove_node(name)
+        - cluster_status()
       Jobs:
         - get_job(id)
     """
@@ -92,3 +97,7 @@ class HarperDB(HarperDBBase):
         self.user_info = self._user_info
         self.list_roles = self._list_roles
         self.list_users = self._list_users
+        self.add_node = self._add_node
+        self.update_node = self._update_node
+        self.remove_node = self._remove_node
+        self.cluster_status = self._cluster_status

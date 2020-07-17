@@ -822,3 +822,106 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.LIST_ROLES)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_node(self):
+        """ Add a node to a cluster.
+        """
+        spec = {
+            'operation': 'add_node',
+            'name': 'anotherNode',
+            'host': 'hostname',
+            'port': 31415,
+            'subscriptions': [
+                {
+                    'channel': 'dev:dog',
+                    'subscribe': False,
+                    'publish': True,
+                },
+            ]
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_node(
+                name=spec['name'],
+                host=spec['host'],
+                port=spec['port'],
+                subscriptions=spec['subscriptions'],),
+            self.NODE_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_update_node(self):
+        """ Update a node in a cluster.
+        """
+        spec = {
+            'operation': 'update_node',
+            'name': 'anotherNode',
+            'host': 'hostname',
+            'port': 31415,
+            'subscriptions': [
+                {
+                    'channel': 'dev:dog',
+                    'subscribe': False,
+                    'publish': True,
+                },
+            ]
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._update_node(
+                name=spec['name'],
+                host=spec['host'],
+                port=spec['port'],
+                subscriptions=spec['subscriptions'],),
+            self.NODE_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_remove_node(self):
+        """ Remove a node from a cluster.
+        """
+        spec = {
+            'operation': 'remove_node',
+            'name': 'anotherNode',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_REMOVED,
+            status=200)
+
+        self.assertEqual(
+            self.db._remove_node(name=spec['name']),
+            self.NODE_REMOVED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_cluster_status(self):
+        """ Retrieve cluster status.
+        """
+        spec = {
+            'operation': 'cluster_status',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.CLUSTER_STATUS,
+            status=200)
+
+        self.assertEqual(self.db._cluster_status(), self.CLUSTER_STATUS)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)

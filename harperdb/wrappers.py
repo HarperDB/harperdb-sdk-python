@@ -75,6 +75,11 @@ class HarperDBWrapper(HarperDBBase):
         - _user_info(username)
         - _list_roles()
         - _list_users()
+      Clustering:
+        - _add_node(name, host, port, subscriptions)
+        - _update_node(name, host, port, subscriptions)
+        - _remove_node(name)
+        - _cluster_status()
       Jobs:
         - _get_job(id)
     """

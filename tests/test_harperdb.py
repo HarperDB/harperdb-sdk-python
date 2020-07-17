@@ -39,3 +39,7 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         db.user_info
         db.list_roles
         db.list_users
+        db.add_node
+        db.update_node
+        db.remove_node
+        db.cluster_status
