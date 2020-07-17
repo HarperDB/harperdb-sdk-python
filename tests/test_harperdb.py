@@ -46,3 +46,8 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         db.registration_info
         db.get_fingerprint
         db.set_license
+        db.delete_files_before
+        db.export_local
+        db.export_to_s3
+        db.read_log
+        db.system_information

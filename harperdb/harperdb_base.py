@@ -316,6 +316,82 @@ class HarperDBBase():
             'company': company,
         })
 
+    # Utilities
+
+    def _delete_files_before(self, schema, table, date):
+        return self.__make_request({
+            'operation': 'delete_files_before',
+            'schema': schema,
+            'table': table,
+            'date': date,
+        })
+
+    def _export_local(
+            self,
+            path,
+            search_attribute=None,
+            search_value=None,
+            hash_values=None,
+            sql=None,
+            format='json'):
+        call = {
+            'operation': 'export_local',
+            'path': path,
+            'format': format,
+        }
+        search_operation = dict()
+        if search_attribute:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_attribute'] = search_attribute
+        if search_value:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_value'] = search_value
+        if hash_values:
+            search_operation['operation'] = 'search_by_hash'
+            search_operation['hash_values'] = hash_values
+        if sql:
+            search_operation['operation'] = 'sql'
+            search_operation['sql'] = sql
+        call['search_operation'] = search_operation
+        return self.__make_request(call)
+
+    def _export_to_s3(
+            self,
+            aws_access_key,
+            aws_secret_access_key,
+            bucket,
+            key,
+            search_attribute=None,
+            search_value=None,
+            hash_values=None,
+            sql=None,
+            format='json'):
+        call = {
+            'operation': 'export_to_s3',
+            'format': format,
+            's3': {
+                'aws_access_key_id': aws_access_key,
+                'aws_secret_access_key': aws_secret_access_key,
+                'bucket': bucket,
+                'key': key,
+            },
+        }
+        search_operation = dict()
+        if search_attribute:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_attribute'] = search_attribute
+        if search_value:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_value'] = search_value
+        if hash_values:
+            search_operation['operation'] = 'search_by_hash'
+            search_operation['hash_values'] = hash_values
+        if sql:
+            search_operation['operation'] = 'sql'
+            search_operation['sql'] = sql
+        call['search_operation'] = search_operation
+        return self.__make_request(call)
+
     # Jobs
 
     def _get_job(self, id):

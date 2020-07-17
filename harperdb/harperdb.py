@@ -108,3 +108,8 @@ class HarperDB(HarperDBBase):
         self.registration_info = self._registration_info
         self.get_fingerprint = self._get_fingerprint
         self.set_license = self._set_license
+        self.delete_files_before = self._delete_files_before
+        self.export_local = self._export_local
+        self.export_to_s3 = self._export_to_s3
+        self.read_log = self._read_log
+        self.system_information = self._system_information

@@ -90,8 +90,8 @@ Users and Roles:
 
 Clustering:
 
-- **add_node(name, host, port, subscriptions)**
-- **update_node(name, host, port, subscriptions)**
+- **add_node(name, host, port, subscriptions=None)**
+- **update_node(name, host, port, subscriptions=None)**
 - **remove_node(name)**
 - **cluster_status()**
 
@@ -100,6 +100,14 @@ Registration:
 - **registration_info()**
 - **get_fingerprint()**
 - **set_license(key, company)**
+
+Utilities:
+
+- **delete_files_before(schema, table, date)**
+- **export_local(path, search_operation, search_attribute=None, search_value=None, hash_values=None, sql=None, format="json")**
+- **export_to_s3(aws_access_key_id, aws_secret_access_key, bucket, key, search_operation, search_attribute=None, search_value=None, hash_value=None, sql=None,, format="json")**
+- **read_log(limit=100, start=0, from=None, until=None, order="desc")**
+- **system_information()**
 
 Jobs:
 
@@ -207,6 +215,14 @@ Registration:
 - **_registration_info()**
 - **_get_fingerprint()**
 - **_set_license(key, company)**
+
+Utilities:
+
+- **_delete_files_before(schema, table, date)**
+- **_export_local(path, search_operation, search_attribute=None, search_value=None, hash_values=None, sql=None, format="json")**
+- **_export_to_s3(aws_access_key_id, aws_secret_access_key, bucket, key, search_operation, search_attribute=None, search_value=None, hash_value=None, sql=None,, format="json")**
+- **_read_log(limit=100, start=0, from=None, until=None, order="desc")**
+- **_system_information()**
 
 Jobs:
 

@@ -721,14 +721,14 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             'role': 'developer',
             'permission': {
                 'super_user': False,
-                'dev':{
+                'dev': {
                     'tables': {
-                            'dog': {
+                        'dog': {
                             'read': True,
                             'insert': True,
                             'update': True,
                             'delete': False,
-                            'attribute_restrictions':[]
+                            'attribute_restrictions': [],
                         }
                     }
                 }
@@ -756,14 +756,14 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             'id': 'aUniqueID',
             'permission': {
                 'super_user': False,
-                'dev':{
+                'dev': {
                     'tables': {
-                            'dog': {
+                        'dog': {
                             'read': True,
                             'insert': True,
                             'update': True,
                             'delete': False,
-                            'attribute_restrictions':[]
+                            'attribute_restrictions': []
                         }
                     }
                 }
@@ -980,3 +980,183 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.SET_LICENSE)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_delete_files_before(self):
+        """ Delete records before a given date.
+        """
+        spec = {
+            'operation': 'delete_files_before',
+            'date': '2018-07-10',
+            'schema': 'dev',
+            'table': 'dog',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORDS_DELETED,
+            status=200)
+
+        self.assertEqual(
+            self.db._delete_files_before(
+                date=spec['date'],
+                schema=spec['schema'],
+                table=spec['table']),
+            self.RECORDS_DELETED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_export_local(self):
+        """ Export records to server file system.
+        """
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.START_JOB,
+            status=200)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'json',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'search_by_hash',
+                'hash_values': ['uniqueHash'],
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                hash_values=['uniqueHash']),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'csv',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'search_by_value',
+                'search_attribute': 'pi',
+                'search_value': 3.14,
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                search_attribute='pi',
+                search_value=3.14,
+                format='csv'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'json',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'sql',
+                'sql': 'my SQL string',
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                sql='my SQL string'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 3)
+
+    @responses.activate
+    def test_export_to_s3(self):
+        """ Export records to an Amazon S3 bucket.
+        """
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.START_JOB,
+            status=200)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'json',
+            'search_operation': {
+                'operation': 'search_by_hash',
+                'hash_values': ['uniqueHash'],
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                hash_values=['uniqueHash']),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'csv',
+            'search_operation': {
+                'operation': 'search_by_value',
+                'search_attribute': 'pi',
+                'search_value': 3.14,
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                search_attribute='pi',
+                search_value=3.14,
+                format='csv'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'json',
+            'search_operation': {
+                'operation': 'sql',
+                'sql': 'my SQL string',
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                sql='my SQL string'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 3)
