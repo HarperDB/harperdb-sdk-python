@@ -174,7 +174,6 @@ class HarperDBBase():
             'data': data,
         })
 
-
     def _csv_file_load(self, schema, table, file_path, action='insert'):
         return self.__make_request({
             'operation': 'csv_file_load',
