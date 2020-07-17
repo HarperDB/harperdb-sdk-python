@@ -89,10 +89,17 @@ Users and Roles:
 - **list_users()**
 
 Clustering:
+
 - **add_node(name, host, port, subscriptions)**
 - **update_node(name, host, port, subscriptions)**
 - **remove_node(name)**
 - **cluster_status()**
+
+Registration:
+
+- **registration_info()**
+- **get_fingerprint()**
+- **set_license(key, company)**
 
 Jobs:
 
@@ -189,10 +196,17 @@ Users and Roles:
 - **_list_users()**
 
 Clustering:
+
 - **_add_node(name, host, port, subscriptions)**
 - **_update_node(name, host, port, subscriptions)**
 - **_remove_node(name)**
 - **_cluster_status()**
+
+Registration:
+
+- **_registration_info()**
+- **_get_fingerprint()**
+- **_set_license(key, company)**
 
 Jobs:
 

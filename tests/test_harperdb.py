@@ -43,3 +43,6 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         db.update_node
         db.remove_node
         db.cluster_status
+        db.registration_info
+        db.get_fingerprint
+        db.set_license

@@ -469,6 +469,20 @@ class HarperDBTestCase(unittest.TestCase):
     NODE_REMOVED = {
         "message": "successfully removed node from manifest"
     }
+    REGISTRATION = {
+        "registered": True,
+        "version": "2.1.2",
+        "storage_type": "lmdb",
+        "ram_allocation": 1024,
+        "license_expiration_date": 0,
+    }
+    FINGERPRINT = {
+        "message": "aUniqueFingerprint"
+    }
+    # need a real sample response, this is just an assumed placeholder
+    SET_LICENSE = {
+        "message": "success"
+    }
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

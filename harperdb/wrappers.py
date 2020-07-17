@@ -80,6 +80,10 @@ class HarperDBWrapper(HarperDBBase):
         - _update_node(name, host, port, subscriptions)
         - _remove_node(name)
         - _cluster_status()
+      Registration:
+        - _registration_info()
+        - _get_fingerprint()
+        - _set_license(key, company)
       Jobs:
         - _get_job(id)
     """

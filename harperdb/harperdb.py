@@ -64,6 +64,10 @@ class HarperDB(HarperDBBase):
         - update_node(name, host, port, subscriptions)
         - remove_node(name)
         - cluster_status()
+      Registration:
+        - registration_info()
+        - get_fingerprint()
+        - set_license(key, company)
       Jobs:
         - get_job(id)
     """
@@ -101,3 +105,6 @@ class HarperDB(HarperDBBase):
         self.update_node = self._update_node
         self.remove_node = self._remove_node
         self.cluster_status = self._cluster_status
+        self.registration_info = self._registration_info
+        self.get_fingerprint = self._get_fingerprint
+        self.set_license = self._set_license

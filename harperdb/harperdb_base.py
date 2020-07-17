@@ -297,6 +297,25 @@ class HarperDBBase():
             'operation': 'cluster_status',
         })
 
+    # Registration
+
+    def _registration_info(self):
+        return self.__make_request({
+            'operation': 'registration_info',
+        })
+
+    def _get_fingerprint(self):
+        return self.__make_request({
+            'operation': 'get_fingerprint',
+        })
+
+    def _set_license(self, key, company):
+        return self.__make_request({
+            'operation': 'set_license',
+            'key': key,
+            'company': company,
+        })
+
     # Jobs
 
     def _get_job(self, id):

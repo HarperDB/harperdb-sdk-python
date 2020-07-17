@@ -925,3 +925,58 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(self.db._cluster_status(), self.CLUSTER_STATUS)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_registration_info(self):
+        """ Retrieve registration info.
+        """
+        spec = {
+            'operation': 'registration_info',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.REGISTRATION,
+            status=200)
+
+        self.assertEqual(self.db._registration_info(), self.REGISTRATION)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_get_fingerprint(self):
+        """ Retrieve fingerprint.
+        """
+        spec = {
+            'operation': 'get_fingerprint',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.FINGERPRINT,
+            status=200)
+
+        self.assertEqual(self.db._get_fingerprint(), self.FINGERPRINT)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_set_license(self):
+        """ Set license.
+        """
+        spec = {
+            'operation': 'set_license',
+            'key': 'myLicenseKey',
+            'company': 'myCompany',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SET_LICENSE,
+            status=200)
+
+        self.assertEqual(
+            self.db._set_license(spec['key'], spec['company']),
+            self.SET_LICENSE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
