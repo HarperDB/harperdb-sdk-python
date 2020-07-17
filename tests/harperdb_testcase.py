@@ -433,6 +433,29 @@ class HarperDBTestCase(unittest.TestCase):
             '__createdtime__': 1234567890002,
         }
     ]
+    GET_JOB = [
+        {
+            '__createdtime__': 1234567890000,
+            '__updatedtime__': 1234567890002,
+            'created_datetime': 1234567890004,
+            'end_datetime': 1234567890008,
+            'id': 'aUniqueID',
+            'job_body': None,
+            'message': 'successfully loaded 2 of 2 records',
+            'start_datetime': 1234567890006,
+            'status': 'COMPLETE',
+            'type': 'csv_data_load',
+            'user': None,
+            'start_datetime_converted': 'ISO 8601',
+            'end_datetime_converted': 'ISO 8601'
+        }
+    ]
+    START_JOB = {
+        'message': 'Starting job with id aUniqueID'
+    }
+    DROP_ATTRIBUTE = {
+        'message': 'successfully deleted attribute',
+    }
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

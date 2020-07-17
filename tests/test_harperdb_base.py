@@ -30,7 +30,6 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.USERNAME,
             self.PASSWORD,
             timeout=3)
-
         mock_b64encode.assert_called_once_with(
             '{}:{}'.format(self.USERNAME, self.PASSWORD).encode('utf-8'))
         self.assertEqual(db.url, self.URL)
@@ -50,13 +49,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully created schema',
-            },
+            json=self.SCHEMA_CREATED,
             status=200)
 
-        self.db._create_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._create_schema(spec['schema']),
+            self.SCHEMA_CREATED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -71,13 +69,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted schema',
-            },
+            json=self.SCHEMA_DROPPED,
             status=200)
 
-        self.db._drop_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._drop_schema(spec['schema']),
+            self.SCHEMA_DROPPED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -92,33 +89,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    '__createdtime__': 1234567890000,
-                    '__updatedtime__': 1234567890001,
-                    'hash_attribute': 'id',
-                    'id': 'assignedUUID',
-                    'name': 'test_table',
-                    'residence': None,
-                    'schema': 'test_schema',
-                    'attributes': [
-                        {
-                            'attribute': '__createdtime__'
-                        },
-                        {
-                            'attribute': '__updatedtime__'
-                        },
-                        {
-                            'attribute': 'id'
-                        }
-                    ],
-                    'record_count': 0
-                }
-            ],
+            json=self.DESCRIBE_SCHEMA_1,
             status=200)
 
-        self.db._describe_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._describe_schema(spec['schema']),
+            self.DESCRIBE_SCHEMA_1)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -135,16 +111,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully created table',
-            },
+            json=self.TABLE_CREATED,
             status=200)
 
-        self.db._create_table(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_attribute=spec['hash_attribute'])
-
+        self.assertEqual(
+            self.db._create_table(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_attribute=spec['hash_attribute']),
+            self.TABLE_CREATED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -160,30 +135,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                '__createdtime__': 1234567890000,
-                '__updatedtime__': 1234567890001,
-                'hash_attribute': 'id',
-                'id': 'assignedUUID',
-                'name': 'test_table',
-                'residence': None,
-                'schema': 'test_schema',
-                'attributes': [
-                    {
-                        'attribute': '__createdtime__'
-                    },
-                    {
-                        'attribute': '__updatedtime__'
-                    },
-                    {
-                        'attribute': 'id'
-                    }
-                ],
-                'record_count': 0
-            },
+            json=self.DESCRIBE_TABLE,
             status=200)
 
-        self.db._describe_table(spec['schema'], spec['table'])
+        self.assertEqual(
+            self.db._describe_table(spec['schema'], spec['table']),
+            self.DESCRIBE_TABLE)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -197,35 +154,10 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'test_schema': {
-                    'test_table': {
-                        '__createdtime__': 1234567890000,
-                        '__updatedtime__': 1234567890001,
-                        'hash_attribute': 'id',
-                        'id': 'assignedUUID',
-                        'name': 'test_table',
-                        'residence': None,
-                        'schema': 'test_schema',
-                        'attributes': [
-                            {
-                                'attribute': '__createdtime__'
-                            },
-                            {
-                                'attribute': '__updatedtime__'
-                            },
-                            {
-                                'attribute': 'id'
-                            }
-                        ],
-                        'record_count': 0
-                    }
-                }
-            },
+            json=self.DESCRIBE_ALL,
             status=200)
 
-        self.db._describe_all()
-
+        self.assertEqual(self.db._describe_all(), self.DESCRIBE_ALL)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -241,13 +173,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted table',
-            },
+            json=self.TABLE_DROPPED,
             status=200)
 
-        self.db._drop_table(schema=spec['schema'], table=spec['table'])
-
+        self.assertEqual(
+            self.db._drop_table(schema=spec['schema'], table=spec['table']),
+            self.TABLE_DROPPED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -266,16 +197,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted table',
-            },
+            json=self.DROP_ATTRIBUTE,
             status=200)
 
-        self.db._drop_attribute(
-            schema=spec['schema'],
-            table=spec['table'],
-            attribute=spec['attribute'])
-
+        self.assertEqual(
+            self.db._drop_attribute(
+                schema=spec['schema'],
+                table=spec['table'],
+                attribute=spec['attribute']),
+            self.DROP_ATTRIBUTE)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -299,20 +229,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'inserted 1 of 1 records',
-                'skipped_hashes': [],
-                'inserted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_INSERTED,
             status=200)
 
-        self.db._insert(
-            schema=spec['schema'],
-            table=spec['table'],
-            records=spec['records'])
-
+        self.assertEqual(
+            self.db._insert(
+                schema=spec['schema'],
+                table=spec['table'],
+                records=spec['records']),
+            self.RECORD_INSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -336,20 +261,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'updated 1 of 1 records',
-                'skipped_hashes': [],
-                'updated_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_UPSERTED,
             status=200)
 
-        self.db._update(
-            schema=spec['schema'],
-            table=spec['table'],
-            records=spec['records'])
-
+        self.assertEqual(
+            self.db._update(
+                schema=spec['schema'],
+                table=spec['table'],
+                records=spec['records']),
+            self.RECORD_UPSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -368,20 +288,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'deleted 1 of 1 records',
-                'skipped_hashes': [],
-                'deleted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORDS_DELETED,
             status=200)
 
-        self.db._delete(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_values=spec['hash_values'])
-
+        self.assertEqual(
+            self.db._delete(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_values=spec['hash_values']),
+            self.RECORDS_DELETED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -401,19 +316,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    'id': 1,
-                    'name': 'bar',
-                },
-            ],
+            json=self.RECORDS,
             status=200)
 
-        self.db._search_by_hash(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_values=spec['hash_values'])
-
+        self.assertEqual(
+            self.db._search_by_hash(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_values=spec['hash_values']),
+            self.RECORDS)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -445,20 +356,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    'id': 1,
-                    'name': 'foo',
-                },
-            ],
+            json=self.RECORDS,
             status=200)
 
-        self.db._search_by_value(
-            schema=spec['schema'],
-            table=spec['table'],
-            search_attribute=spec['search_attribute'],
-            search_value=spec['search_value'])
-
+        self.assertEqual(
+            self.db._search_by_value(
+                schema=spec['schema'],
+                table=spec['table'],
+                search_attribute=spec['search_attribute'],
+                search_value=spec['search_value']),
+            self.RECORDS)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -489,16 +396,10 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'inserted 1 of 1 records',
-                'skipped_hashes': [],
-                'inserted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_INSERTED,
             status=200)
 
-        self.db._sql(sql_string)
+        self.assertEqual(self.db._sql(sql_string), self.RECORD_INSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -520,15 +421,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_data_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            path='tests/test.csv')
+        self.assertEqual(
+            self.db._csv_data_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                path='tests/test.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -550,16 +451,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_data_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            path='tests/test.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_data_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                path='tests/test.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -578,15 +479,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_file_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            file_path='path/to/file/on/host.csv')
+        self.assertEqual(
+            self.db._csv_file_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                file_path='path/to/file/on/host.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -605,16 +506,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_file_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            file_path='path/to/file/on/host.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_file_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                file_path='path/to/file/on/host.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -633,15 +534,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_url_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            csv_url='example.com/test.csv')
+        self.assertEqual(
+            self.db._csv_url_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                csv_url='example.com/test.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -660,16 +561,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_url_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            csv_url='example.com/test.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_url_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                csv_url='example.com/test.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -685,26 +586,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    '__createdtime__': 1234567890000,
-                    '__updatedtime__': 1234567890002,
-                    'created_datetime': 1234567890004,
-                    'end_datetime': 1234567890008,
-                    'id': 'aUniqueID',
-                    'job_body': None,
-                    'message': 'successfully loaded 2 of 2 records',
-                    'start_datetime': 1234567890006,
-                    'status': 'COMPLETE',
-                    'type': 'csv_data_load',
-                    'user': None,
-                    'start_datetime_converted': 'ISO 8601',
-                    'end_datetime_converted': 'ISO 8601'
-                }
-            ],
+            json=self.GET_JOB,
             status=200)
 
-        self.db._get_job(spec['id'])
+        self.assertEqual(
+            self.db._get_job(spec['id']),
+            self.GET_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
