@@ -69,15 +69,6 @@ class HarperDBWrapper(HarperDBBase):
         - _get_job(id)
     """
 
-    def __init__(self, url, username=None, password=None, timeout=10):
-        self.url = url
-        self.token = None
-        if username and password:
-            token = '{}:{}'.format(username, password).encode('utf-8')
-            token = base64.b64encode(token).decode('utf-8')
-            self.token = 'Basic {}'.format(token)
-        self.timeout = timeout
-
     def __getitem__(self, key):
         return HarperDBSchema(key, self)
 
