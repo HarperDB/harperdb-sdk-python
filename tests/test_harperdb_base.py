@@ -1043,45 +1043,38 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
+                path=spec['path'],
                 hash_values=['uniqueHash']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
-        spec = {
-            'operation': 'export_local',
-            'format': 'csv',
-            'path': 'path/to/data',
-            'search_operation': {
-                'operation': 'search_by_value',
-                'search_attribute': 'pi',
-                'search_value': 3.14,
-            },
+        # test keyword args
+        spec['format'] = 'csv'
+        spec['search_operation'] = {
+            'operation': 'search_by_value',
+            'search_attribute': 'pi',
+            'search_value': 3.14,
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
+                path=spec['path'],
                 search_attribute='pi',
                 search_value=3.14,
                 format='csv'),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 2)
-
-        spec = {
-            'operation': 'export_local',
-            'format': 'json',
-            'path': 'path/to/data',
-            'search_operation': {
-                'operation': 'sql',
-                'sql': 'my SQL string',
-            },
+        # more keyword args
+        spec['format'] = 'json'
+        spec['search_operation'] = {
+            'operation': 'sql',
+            'sql': 'my SQL string',
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
-                sql='my SQL string'),
+                path=spec['path'],
+                sql=spec['search_operation']['sql']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 3)
@@ -1170,7 +1163,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
                 aws_secret_access_key='mySecretKey',
                 bucket='myBucket',
                 key='KEY',
-                sql='my SQL string'),
+                sql=spec['search_operation']['sql']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 3)
