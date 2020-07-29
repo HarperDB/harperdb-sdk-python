@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="harperdb",
-    version="0.3.0",
+    version="0.4.0",
     author="Tom Young",
     author_email="shadetreemetalworks@gmail.com",
     maintainer="HarperDB",
