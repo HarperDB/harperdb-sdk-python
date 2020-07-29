@@ -334,6 +334,181 @@ class HarperDBTestCase(unittest.TestCase):
             'color': 'Gray',
         },
     ]
+    USER_ADDED = {
+        'message': 'user successfully added',
+    }
+    USER_ALTERED = {
+        "message": "updated 1 of 1 records",
+        "skipped_hashes": [],
+        "new_attributes": [],
+        "update_hashes": [
+            "user"
+        ]
+    }
+    USER_DROPPED = {
+        "message": "user successfully deleted"
+    }
+    USER_INFO = {
+        "__createdtime__": 1234567890000,
+        "__updatedtime__": 1234567890002,
+        "active": True,
+        "role": {
+            "__createdtime__": 1234567890000,
+            "__updatedtime__": 1234567890002,
+            "id": "aUniqueID",
+            "permission": {
+                "super_user": False
+            },
+            "role": "developer"
+        },
+        "username": "user"
+    }
+    LIST_USERS = [
+        {
+            "__createdtime__": 1234567890000,
+            "__updatedtime__": 1234567890002,
+            "active": True,
+            "role": {
+                "__createdtime__": 1234567890000,
+                "__updatedtime__": 1234567890002,
+                "id": "aUniqueID",
+                "permission": {
+                    "super_user": False
+                },
+                "role": "developer"
+            },
+            "username": "user"
+        }
+    ]
+    ADD_ROLE = {
+        'role': 'developer',
+        'permission': {
+            'super_user': False,
+            'dev': {
+                'tables': {
+                    'dog': {
+                        'read': True,
+                        'insert': True,
+                        'update': True,
+                        'delete': False,
+                        'attribute_restrictions': [],
+                    },
+                },
+            },
+        },
+        'id': 'aUniqueID',
+        '__updatedtime__': 1234567890000,
+        '__createdtime__': 1234567890002,
+    }
+    ALTER_ROLE = {
+        "message": "updated 1 of 1 records",
+        "skipped_hashes": [],
+        "new_attributes": [],
+        "update_hashes": [
+            "1ef29958-7c9b-4aad-a4f5-12e72f989758"
+        ]
+    }
+    DROP_ROLE = {
+        "message": "developer successfully deleted"
+    }
+    LIST_ROLES = [
+        {
+            'role': 'developer',
+            'permission': {
+                'super_user': False,
+                'dev': {
+                    'tables': {
+                        'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions': [],
+                        },
+                    },
+                },
+            },
+            'id': 'aUniqueID',
+            '__updatedtime__': 1234567890000,
+            '__createdtime__': 1234567890002,
+        }
+    ]
+    GET_JOB = [
+        {
+            '__createdtime__': 1234567890000,
+            '__updatedtime__': 1234567890002,
+            'created_datetime': 1234567890004,
+            'end_datetime': 1234567890008,
+            'id': 'aUniqueID',
+            'job_body': None,
+            'message': 'successfully loaded 2 of 2 records',
+            'start_datetime': 1234567890006,
+            'status': 'COMPLETE',
+            'type': 'csv_data_load',
+            'user': None,
+            'start_datetime_converted': 'ISO 8601',
+            'end_datetime_converted': 'ISO 8601'
+        }
+    ]
+    START_JOB = {
+        'message': 'Starting job with id aUniqueID'
+    }
+    DROP_ATTRIBUTE = {
+        'message': 'successfully deleted attribute',
+    }
+    NODE_ADDED = {
+        "message": "successfully added node to manifest"
+    }
+    NODE_UPDATED = {
+        "message": "successfully updated dummy"
+    }
+    CLUSTER_STATUS = {
+        "is_enabled": False,
+        "node_name": 0
+    }
+    NODE_REMOVED = {
+        "message": "successfully removed node from manifest"
+    }
+    REGISTRATION = {
+        "registered": True,
+        "version": "2.1.2",
+        "storage_type": "lmdb",
+        "ram_allocation": 1024,
+        "license_expiration_date": 0,
+    }
+    FINGERPRINT = {
+        "message": "aUniqueFingerprint"
+    }
+    # need a real sample response, this is just an assumed placeholder
+    SET_LICENSE = {
+        "message": "success"
+    }
+    READ_LOG = {
+        'file': [
+            {
+                'level': 'LEVEL',
+                'message': 'MESSAGE',
+                'timestamp': '2020-01-01T00:00:00.000Z'
+            },
+        ],
+    }
+    SYSTEM_INFORMATION = {
+        "system": {},
+        "time": {},
+        "cpu": {},
+        "memory": {},
+        "disk": {},
+        "network": {},
+        "harperdb_processes": {}
+    }
+    SEARCH_JOB = [
+        {},
+    ]
+
+    def tearDown(self):
+        """ This method is called after each test.
+        """
+        responses.reset()
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

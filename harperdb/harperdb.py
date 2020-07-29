@@ -49,8 +49,53 @@ class HarperDB(HarperDBBase):
         - csv_data_load(schema, table, path, action="insert")
         - csv_file_load(schema, table, file_path, action="insert")
         - csv_url_load(schema, table, csv_url, action="insert")
+      Users and Roles:
+        - add_user(role id, username, password, active=True)
+        - add_role(name, permission)
+        - alter_user(role, username, password, active=True)
+        - alter_role(id, permission)
+        - drop_role(id)
+        - drop_user(username)
+        - user_info(username)
+        - list_roles()
+        - list_users()
+      Clustering:
+        - add_node(name, host, port, subscriptions)
+        - update_node(name, host, port, subscriptions)
+        - remove_node(name)
+        - cluster_status()
+      Registration:
+        - registration_info()
+        - get_fingerprint()
+        - set_license(key, company)
+      Utilities:
+        - delete_files_before(schema, table, date)
+        - export_local(path,
+                       search_operation,
+                       search_attribute=None,
+                       search_value=None,
+                       hash_values=None,
+                       sql=None,
+                       format="json")
+        - export_to_s3(aws_access_key_id,
+                       aws_secret_access_key,
+                       bucket,
+                       key,
+                       search_operation,
+                       search_attribute=None,
+                       search_value=None,
+                       hash_value=None,
+                       sql=None,
+                       format="json")
+        - read_log(limit=1000,
+                   start=0,
+                   from_date=None,
+                   to_date=None,
+                   order="desc")
+        - system_information()
       Jobs:
         - get_job(id)
+        - search_jobs_by_start_date(from_date, to_date)
     """
 
     def __init__(self, *args, **kwargs):
@@ -73,3 +118,25 @@ class HarperDB(HarperDBBase):
         self.csv_file_load = self._csv_file_load
         self.csv_url_load = self._csv_url_load
         self.get_job = self._get_job
+        self.search_jobs_by_start_date = self._search_jobs_by_start_date
+        self.add_user = self._add_user
+        self.add_role = self._add_role
+        self.alter_user = self._alter_user
+        self.alter_role = self._alter_role
+        self.drop_role = self._drop_role
+        self.drop_user = self._drop_user
+        self.user_info = self._user_info
+        self.list_roles = self._list_roles
+        self.list_users = self._list_users
+        self.add_node = self._add_node
+        self.update_node = self._update_node
+        self.remove_node = self._remove_node
+        self.cluster_status = self._cluster_status
+        self.registration_info = self._registration_info
+        self.get_fingerprint = self._get_fingerprint
+        self.set_license = self._set_license
+        self.delete_files_before = self._delete_files_before
+        self.export_local = self._export_local
+        self.export_to_s3 = self._export_to_s3
+        self.read_log = self._read_log
+        self.system_information = self._system_information

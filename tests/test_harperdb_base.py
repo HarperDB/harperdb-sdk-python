@@ -10,7 +10,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
     def setUp(self):
         """ This method is called before each test.
         """
-        self.db = harperdb.HarperDB(self.URL)
+        self.db = harperdb.HarperDBBase(self.URL)
 
     @unittest.mock.patch('base64.b64encode')
     def test_create_harperdb_base_with_kwargs(self, mock_b64encode):
@@ -25,7 +25,6 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.USERNAME,
             self.PASSWORD,
             timeout=3)
-
         mock_b64encode.assert_called_once_with(
             '{}:{}'.format(self.USERNAME, self.PASSWORD).encode('utf-8'))
         self.assertEqual(db.url, self.URL)
@@ -45,13 +44,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully created schema',
-            },
+            json=self.SCHEMA_CREATED,
             status=200)
 
-        self.db._create_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._create_schema(spec['schema']),
+            self.SCHEMA_CREATED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -66,13 +64,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted schema',
-            },
+            json=self.SCHEMA_DROPPED,
             status=200)
 
-        self.db._drop_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._drop_schema(spec['schema']),
+            self.SCHEMA_DROPPED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -87,33 +84,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    '__createdtime__': 1234567890000,
-                    '__updatedtime__': 1234567890001,
-                    'hash_attribute': 'id',
-                    'id': 'assignedUUID',
-                    'name': 'test_table',
-                    'residence': None,
-                    'schema': 'test_schema',
-                    'attributes': [
-                        {
-                            'attribute': '__createdtime__'
-                        },
-                        {
-                            'attribute': '__updatedtime__'
-                        },
-                        {
-                            'attribute': 'id'
-                        }
-                    ],
-                    'record_count': 0
-                }
-            ],
+            json=self.DESCRIBE_SCHEMA_1,
             status=200)
 
-        self.db._describe_schema(spec['schema'])
-
+        self.assertEqual(
+            self.db._describe_schema(spec['schema']),
+            self.DESCRIBE_SCHEMA_1)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -130,16 +106,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully created table',
-            },
+            json=self.TABLE_CREATED,
             status=200)
 
-        self.db._create_table(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_attribute=spec['hash_attribute'])
-
+        self.assertEqual(
+            self.db._create_table(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_attribute=spec['hash_attribute']),
+            self.TABLE_CREATED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -155,30 +130,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                '__createdtime__': 1234567890000,
-                '__updatedtime__': 1234567890001,
-                'hash_attribute': 'id',
-                'id': 'assignedUUID',
-                'name': 'test_table',
-                'residence': None,
-                'schema': 'test_schema',
-                'attributes': [
-                    {
-                        'attribute': '__createdtime__'
-                    },
-                    {
-                        'attribute': '__updatedtime__'
-                    },
-                    {
-                        'attribute': 'id'
-                    }
-                ],
-                'record_count': 0
-            },
+            json=self.DESCRIBE_TABLE,
             status=200)
 
-        self.db._describe_table(spec['schema'], spec['table'])
+        self.assertEqual(
+            self.db._describe_table(spec['schema'], spec['table']),
+            self.DESCRIBE_TABLE)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -192,35 +149,10 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'test_schema': {
-                    'test_table': {
-                        '__createdtime__': 1234567890000,
-                        '__updatedtime__': 1234567890001,
-                        'hash_attribute': 'id',
-                        'id': 'assignedUUID',
-                        'name': 'test_table',
-                        'residence': None,
-                        'schema': 'test_schema',
-                        'attributes': [
-                            {
-                                'attribute': '__createdtime__'
-                            },
-                            {
-                                'attribute': '__updatedtime__'
-                            },
-                            {
-                                'attribute': 'id'
-                            }
-                        ],
-                        'record_count': 0
-                    }
-                }
-            },
+            json=self.DESCRIBE_ALL,
             status=200)
 
-        self.db._describe_all()
-
+        self.assertEqual(self.db._describe_all(), self.DESCRIBE_ALL)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -236,13 +168,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted table',
-            },
+            json=self.TABLE_DROPPED,
             status=200)
 
-        self.db._drop_table(schema=spec['schema'], table=spec['table'])
-
+        self.assertEqual(
+            self.db._drop_table(schema=spec['schema'], table=spec['table']),
+            self.TABLE_DROPPED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -261,16 +192,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'successfully deleted table',
-            },
+            json=self.DROP_ATTRIBUTE,
             status=200)
 
-        self.db._drop_attribute(
-            schema=spec['schema'],
-            table=spec['table'],
-            attribute=spec['attribute'])
-
+        self.assertEqual(
+            self.db._drop_attribute(
+                schema=spec['schema'],
+                table=spec['table'],
+                attribute=spec['attribute']),
+            self.DROP_ATTRIBUTE)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -294,20 +224,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'inserted 1 of 1 records',
-                'skipped_hashes': [],
-                'inserted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_INSERTED,
             status=200)
 
-        self.db._insert(
-            schema=spec['schema'],
-            table=spec['table'],
-            records=spec['records'])
-
+        self.assertEqual(
+            self.db._insert(
+                schema=spec['schema'],
+                table=spec['table'],
+                records=spec['records']),
+            self.RECORD_INSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -331,20 +256,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'updated 1 of 1 records',
-                'skipped_hashes': [],
-                'updated_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_UPSERTED,
             status=200)
 
-        self.db._update(
-            schema=spec['schema'],
-            table=spec['table'],
-            records=spec['records'])
-
+        self.assertEqual(
+            self.db._update(
+                schema=spec['schema'],
+                table=spec['table'],
+                records=spec['records']),
+            self.RECORD_UPSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -363,20 +283,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'deleted 1 of 1 records',
-                'skipped_hashes': [],
-                'deleted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORDS_DELETED,
             status=200)
 
-        self.db._delete(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_values=spec['hash_values'])
-
+        self.assertEqual(
+            self.db._delete(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_values=spec['hash_values']),
+            self.RECORDS_DELETED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -396,19 +311,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    'id': 1,
-                    'name': 'bar',
-                },
-            ],
+            json=self.RECORDS,
             status=200)
 
-        self.db._search_by_hash(
-            schema=spec['schema'],
-            table=spec['table'],
-            hash_values=spec['hash_values'])
-
+        self.assertEqual(
+            self.db._search_by_hash(
+                schema=spec['schema'],
+                table=spec['table'],
+                hash_values=spec['hash_values']),
+            self.RECORDS)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -440,20 +351,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    'id': 1,
-                    'name': 'foo',
-                },
-            ],
+            json=self.RECORDS,
             status=200)
 
-        self.db._search_by_value(
-            schema=spec['schema'],
-            table=spec['table'],
-            search_attribute=spec['search_attribute'],
-            search_value=spec['search_value'])
-
+        self.assertEqual(
+            self.db._search_by_value(
+                schema=spec['schema'],
+                table=spec['table'],
+                search_attribute=spec['search_attribute'],
+                search_value=spec['search_value']),
+            self.RECORDS)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -484,16 +391,10 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'inserted 1 of 1 records',
-                'skipped_hashes': [],
-                'inserted_hashes': [
-                    1,
-                ],
-            },
+            json=self.RECORD_INSERTED,
             status=200)
 
-        self.db._sql(sql_string)
+        self.assertEqual(self.db._sql(sql_string), self.RECORD_INSERTED)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -515,15 +416,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_data_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            path='tests/test.csv')
+        self.assertEqual(
+            self.db._csv_data_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                path='tests/test.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -545,16 +446,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_data_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            path='tests/test.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_data_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                path='tests/test.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -573,15 +474,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_file_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            file_path='path/to/file/on/host.csv')
+        self.assertEqual(
+            self.db._csv_file_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                file_path='path/to/file/on/host.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -600,16 +501,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_file_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            file_path='path/to/file/on/host.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_file_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                file_path='path/to/file/on/host.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -628,15 +529,15 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_url_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            csv_url='example.com/test.csv')
+        self.assertEqual(
+            self.db._csv_url_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                csv_url='example.com/test.csv'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -655,16 +556,16 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json={
-                'message': 'Starting job with id aUniqueID'
-            },
+            json=self.START_JOB,
             status=200)
 
-        self.db._csv_url_load(
-            schema=spec['schema'],
-            table=spec['table'],
-            csv_url='example.com/test.csv',
-            action='update')
+        self.assertEqual(
+            self.db._csv_url_load(
+                schema=spec['schema'],
+                table=spec['table'],
+                csv_url='example.com/test.csv',
+                action='update'),
+            self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
@@ -680,25 +581,664 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         responses.add(
             'POST',
             self.URL,
-            json=[
-                {
-                    '__createdtime__': 1234567890000,
-                    '__updatedtime__': 1234567890002,
-                    'created_datetime': 1234567890004,
-                    'end_datetime': 1234567890008,
-                    'id': 'aUniqueID',
-                    'job_body': None,
-                    'message': 'successfully loaded 2 of 2 records',
-                    'start_datetime': 1234567890006,
-                    'status': 'COMPLETE',
-                    'type': 'csv_data_load',
-                    'user': None,
-                    'start_datetime_converted': 'ISO 8601',
-                    'end_datetime_converted': 'ISO 8601'
-                }
-            ],
+            json=self.GET_JOB,
             status=200)
 
-        self.db._get_job(spec['id'])
+        self.assertEqual(
+            self.db._get_job(spec['id']),
+            self.GET_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_search_jobs_by_start_date(self):
+        """ Get an array of jobs by date range.
+        """
+        spec = {
+            'operation': 'search_jobs_by_start_date',
+            'from_date': '2020-01-01',
+            'to_date': '2020-02-01',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SEARCH_JOB,
+            status=200)
+
+        self.assertEqual(
+            self.db._search_jobs_by_start_date(
+                from_date=spec['from_date'],
+                to_date=spec['to_date']
+            ),
+            self.SEARCH_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_user(self):
+        """ Add a user.
+        """
+        spec = {
+            'operation': 'add_user',
+            'role': 'aUniqueID',
+            'username': 'user',
+            'password': 'pass',
+            'active': True,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_user(
+                role=spec['role'],
+                username=spec['username'],
+                password=spec['password']),
+            self.USER_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_alter_user(self):
+        """ Alter a user.
+        """
+        spec = {
+            'operation': 'alter_user',
+            'role': 'aUniqueID',
+            'username': 'user',
+            'password': 'pass',
+            'active': False,
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_ALTERED,
+            status=200)
+
+        self.assertEqual(
+            self.db._alter_user(
+                role=spec['role'],
+                username=spec['username'],
+                password=spec['password'],
+                active=False),
+            self.USER_ALTERED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_drop_user(self):
+        """ Drop a user.
+        """
+        spec = {
+            'operation': 'drop_user',
+            'username': 'user',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_DROPPED,
+            status=200)
+
+        self.assertEqual(
+            self.db._drop_user(username=spec['username']),
+            self.USER_DROPPED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_user_info(self):
+        """ Get user info.
+        """
+        spec = {
+            'operation': 'user_info',
+            'username': 'user',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.USER_INFO,
+            status=200)
+
+        self.assertEqual(
+            self.db._user_info(username=spec['username']),
+            self.USER_INFO)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_list_users(self):
+        """ List users.
+        """
+        spec = {
+            'operation': 'list_users',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.LIST_USERS,
+            status=200)
+
+        self.assertEqual(
+            self.db._list_users(),
+            self.LIST_USERS)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_role(self):
+        """ Add a role.
+        """
+        spec = {
+            'operation': 'add_role',
+            'role': 'developer',
+            'permission': {
+                'super_user': False,
+                'dev': {
+                    'tables': {
+                        'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions': [],
+                        }
+                    }
+                }
+            }
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.ADD_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_role(role='developer', permission=spec['permission']),
+            self.ADD_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_alter_role(self):
+        """ Add a role.
+        """
+        spec = {
+            'operation': 'alter_role',
+            'id': 'aUniqueID',
+            'permission': {
+                'super_user': False,
+                'dev': {
+                    'tables': {
+                        'dog': {
+                            'read': True,
+                            'insert': True,
+                            'update': True,
+                            'delete': False,
+                            'attribute_restrictions': []
+                        }
+                    }
+                }
+            }
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.ALTER_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._alter_role(id='aUniqueID', permission=spec['permission']),
+            self.ALTER_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_drop_role(self):
+        """ Drop a role.
+        """
+        spec = {
+            'operation': 'drop_role',
+            'id': 'aUniqueID',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.DROP_ROLE,
+            status=200)
+
+        self.assertEqual(
+            self.db._drop_role(id='aUniqueID'),
+            self.DROP_ROLE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_list_roles(self):
+        """List Roles.
+        """
+        spec = {
+            'operation': 'list_roles',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.LIST_ROLES,
+            status=200)
+
+        self.assertEqual(
+            self.db._list_roles(),
+            self.LIST_ROLES)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_add_node(self):
+        """ Add a node to a cluster.
+        """
+        spec = {
+            'operation': 'add_node',
+            'name': 'anotherNode',
+            'host': 'hostname',
+            'port': 31415,
+            'subscriptions': [
+                {
+                    'channel': 'dev:dog',
+                    'subscribe': False,
+                    'publish': True,
+                },
+            ]
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._add_node(
+                name=spec['name'],
+                host=spec['host'],
+                port=spec['port'],
+                subscriptions=spec['subscriptions'],),
+            self.NODE_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_update_node(self):
+        """ Update a node in a cluster.
+        """
+        spec = {
+            'operation': 'update_node',
+            'name': 'anotherNode',
+            'host': 'hostname',
+            'port': 31415,
+            'subscriptions': [
+                {
+                    'channel': 'dev:dog',
+                    'subscribe': False,
+                    'publish': True,
+                },
+            ]
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_ADDED,
+            status=200)
+
+        self.assertEqual(
+            self.db._update_node(
+                name=spec['name'],
+                host=spec['host'],
+                port=spec['port'],
+                subscriptions=spec['subscriptions'],),
+            self.NODE_ADDED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_remove_node(self):
+        """ Remove a node from a cluster.
+        """
+        spec = {
+            'operation': 'remove_node',
+            'name': 'anotherNode',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.NODE_REMOVED,
+            status=200)
+
+        self.assertEqual(
+            self.db._remove_node(name=spec['name']),
+            self.NODE_REMOVED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_cluster_status(self):
+        """ Retrieve cluster status.
+        """
+        spec = {
+            'operation': 'cluster_status',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.CLUSTER_STATUS,
+            status=200)
+
+        self.assertEqual(self.db._cluster_status(), self.CLUSTER_STATUS)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_registration_info(self):
+        """ Retrieve registration info.
+        """
+        spec = {
+            'operation': 'registration_info',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.REGISTRATION,
+            status=200)
+
+        self.assertEqual(self.db._registration_info(), self.REGISTRATION)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_get_fingerprint(self):
+        """ Retrieve fingerprint.
+        """
+        spec = {
+            'operation': 'get_fingerprint',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.FINGERPRINT,
+            status=200)
+
+        self.assertEqual(self.db._get_fingerprint(), self.FINGERPRINT)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_set_license(self):
+        """ Set license.
+        """
+        spec = {
+            'operation': 'set_license',
+            'key': 'myLicenseKey',
+            'company': 'myCompany',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SET_LICENSE,
+            status=200)
+
+        self.assertEqual(
+            self.db._set_license(spec['key'], spec['company']),
+            self.SET_LICENSE)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_delete_files_before(self):
+        """ Delete records before a given date.
+        """
+        spec = {
+            'operation': 'delete_files_before',
+            'date': '2018-07-10',
+            'schema': 'dev',
+            'table': 'dog',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.RECORDS_DELETED,
+            status=200)
+
+        self.assertEqual(
+            self.db._delete_files_before(
+                date=spec['date'],
+                schema=spec['schema'],
+                table=spec['table']),
+            self.RECORDS_DELETED)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
+    def test_export_local(self):
+        """ Export records to server file system.
+        """
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.START_JOB,
+            status=200)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'json',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'search_by_hash',
+                'hash_values': ['uniqueHash'],
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                hash_values=['uniqueHash']),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'csv',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'search_by_value',
+                'search_attribute': 'pi',
+                'search_value': 3.14,
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                search_attribute='pi',
+                search_value=3.14,
+                format='csv'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+        spec = {
+            'operation': 'export_local',
+            'format': 'json',
+            'path': 'path/to/data',
+            'search_operation': {
+                'operation': 'sql',
+                'sql': 'my SQL string',
+            },
+        }
+        self.assertEqual(
+            self.db._export_local(
+                path='path/to/data',
+                sql='my SQL string'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 3)
+
+    @responses.activate
+    def test_export_to_s3(self):
+        """ Export records to an Amazon S3 bucket.
+        """
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.START_JOB,
+            status=200)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'json',
+            'search_operation': {
+                'operation': 'search_by_hash',
+                'hash_values': ['uniqueHash'],
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                hash_values=['uniqueHash']),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'csv',
+            'search_operation': {
+                'operation': 'search_by_value',
+                'search_attribute': 'pi',
+                'search_value': 3.14,
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                search_attribute='pi',
+                search_value=3.14,
+                format='csv'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+        spec = {
+            'operation': 'export_to_s3',
+            'format': 'json',
+            'search_operation': {
+                'operation': 'sql',
+                'sql': 'my SQL string',
+            },
+            's3': {
+                'aws_access_key_id': 'myKey',
+                'aws_secret_access_key': 'mySecretKey',
+                'bucket': 'myBucket',
+                'key': 'KEY',
+            },
+        }
+        self.assertEqual(
+            self.db._export_to_s3(
+                aws_access_key='myKey',
+                aws_secret_access_key='mySecretKey',
+                bucket='myBucket',
+                key='KEY',
+                sql='my SQL string'),
+            self.START_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 3)
+
+    @responses.activate
+    def test_read_log(self):
+        """ Read the server log.
+        """
+        spec = {
+            'operation': 'read_log',
+            'limit': 1000,
+            'start': 0,
+            'from': None,
+            'until': None,
+            'order': 'desc'
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.READ_LOG,
+            status=200)
+
+        self.assertEqual(self.db._read_log(), self.READ_LOG)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        # test keyword args
+        spec = {
+            'operation': 'read_log',
+            'limit': 1001,
+            'start': 1,
+            'from': "2020-01-01",
+            'until': "2020-02-01",
+            'order': 'asc'
+        }
+
+        self.assertEqual(
+            self.db._read_log(
+                limit=spec['limit'],
+                start=spec['start'],
+                from_date=spec['from'],
+                to_date=spec['until'],
+                order=spec['order']),
+            self.READ_LOG)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+    @responses.activate
+    def test_system_information(self):
+        """ Retrieve system information.
+        """
+        spec = {
+            'operation': 'system_information',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SYSTEM_INFORMATION,
+            status=200)
+
+        self.assertEqual(
+            self.db._system_information(),
+            self.SYSTEM_INFORMATION)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)

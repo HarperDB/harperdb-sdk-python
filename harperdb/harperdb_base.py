@@ -192,10 +192,239 @@ class HarperDBBase():
             'csv_url': csv_url,
         })
 
+    # Users and Roles
+
+    def _add_user(self, role, username, password, active=True):
+        return self.__make_request({
+            'operation': 'add_user',
+            'role': role,
+            'username': username,
+            'password': password,
+            'active': active,
+        })
+
+    def _alter_user(self, role, username, password, active=True):
+        return self.__make_request({
+            'operation': 'alter_user',
+            'role': role,
+            'username': username,
+            'password': password,
+            'active': active,
+        })
+
+    def _drop_user(self, username):
+        return self.__make_request({
+            'operation': 'drop_user',
+            'username': username,
+        })
+
+    def _user_info(self, username):
+        return self.__make_request({
+            'operation': 'user_info',
+            'username': username,
+        })
+
+    def _list_users(self):
+        return self.__make_request({'operation': 'list_users'})
+
+    def _add_role(self, role, permission):
+        return self.__make_request({
+            'operation': 'add_role',
+            'role': role,
+            'permission': permission,
+        })
+
+    def _alter_role(self, id, permission):
+        return self.__make_request({
+            'operation': 'alter_role',
+            'id': id,
+            'permission': permission,
+        })
+
+    def _drop_role(self, id):
+        return self.__make_request({
+            'operation': 'drop_role',
+            'id': id,
+        })
+
+    def _list_roles(self):
+        return self.__make_request({
+            'operation': 'list_roles',
+        })
+
+    # Clustering
+
+    def _add_node(self, name, host, port, subscriptions=None):
+        if subscriptions:
+            return self.__make_request({
+                'operation': 'add_node',
+                'name': name,
+                'host': host,
+                'port': port,
+                'subscriptions': subscriptions,
+            })
+        return self.__make_request({
+            'operation': 'add_node',
+            'name': name,
+            'host': host,
+            'port': port,
+        })
+
+    def _update_node(self, name, host, port, subscriptions=None):
+        if subscriptions:
+            return self.__make_request({
+                'operation': 'update_node',
+                'name': name,
+                'host': host,
+                'port': port,
+                'subscriptions': subscriptions,
+            })
+        return self.__make_request({
+            'operation': 'update_node',
+            'name': name,
+            'host': host,
+            'port': port,
+        })
+
+    def _remove_node(self, name):
+        return self.__make_request({
+            'operation': 'remove_node',
+            'name': name,
+        })
+
+    def _cluster_status(self):
+        return self.__make_request({
+            'operation': 'cluster_status',
+        })
+
+    # Registration
+
+    def _registration_info(self):
+        return self.__make_request({
+            'operation': 'registration_info',
+        })
+
+    def _get_fingerprint(self):
+        return self.__make_request({
+            'operation': 'get_fingerprint',
+        })
+
+    def _set_license(self, key, company):
+        return self.__make_request({
+            'operation': 'set_license',
+            'key': key,
+            'company': company,
+        })
+
+    # Utilities
+
+    def _delete_files_before(self, schema, table, date):
+        return self.__make_request({
+            'operation': 'delete_files_before',
+            'schema': schema,
+            'table': table,
+            'date': date,
+        })
+
+    def _export_local(
+            self,
+            path,
+            search_attribute=None,
+            search_value=None,
+            hash_values=None,
+            sql=None,
+            format='json'):
+        call = {
+            'operation': 'export_local',
+            'path': path,
+            'format': format,
+        }
+        search_operation = dict()
+        if search_attribute:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_attribute'] = search_attribute
+        if search_value:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_value'] = search_value
+        if hash_values:
+            search_operation['operation'] = 'search_by_hash'
+            search_operation['hash_values'] = hash_values
+        if sql:
+            search_operation['operation'] = 'sql'
+            search_operation['sql'] = sql
+        call['search_operation'] = search_operation
+        return self.__make_request(call)
+
+    def _export_to_s3(
+            self,
+            aws_access_key,
+            aws_secret_access_key,
+            bucket,
+            key,
+            search_attribute=None,
+            search_value=None,
+            hash_values=None,
+            sql=None,
+            format='json'):
+        call = {
+            'operation': 'export_to_s3',
+            'format': format,
+            's3': {
+                'aws_access_key_id': aws_access_key,
+                'aws_secret_access_key': aws_secret_access_key,
+                'bucket': bucket,
+                'key': key,
+            },
+        }
+        search_operation = dict()
+        if search_attribute:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_attribute'] = search_attribute
+        if search_value:
+            search_operation['operation'] = 'search_by_value'
+            search_operation['search_value'] = search_value
+        if hash_values:
+            search_operation['operation'] = 'search_by_hash'
+            search_operation['hash_values'] = hash_values
+        if sql:
+            search_operation['operation'] = 'sql'
+            search_operation['sql'] = sql
+        call['search_operation'] = search_operation
+        return self.__make_request(call)
+
+    def _read_log(
+            self,
+            limit=1000,
+            start=0,
+            from_date=None,
+            to_date=None,
+            order='desc'):
+        # "from" is a keyword in python, so we use from_date and to_date
+        return self.__make_request({
+            'operation': 'read_log',
+            'limit': limit,
+            'start': start,
+            'from': from_date,
+            'until': to_date,
+            'order': order,
+        })
+
+    def _system_information(self):
+        return self.__make_request({
+            'operation': 'system_information',
+        })
+
     # Jobs
 
     def _get_job(self, id):
         return self.__make_request({
             'operation': 'get_job',
             'id': id,
+        })
+
+    def _search_jobs_by_start_date(self, from_date, to_date):
+        return self.__make_request({
+            'operation': 'search_jobs_by_start_date',
+            'from_date': from_date,
+            'to_date': to_date,
         })

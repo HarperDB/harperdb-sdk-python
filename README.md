@@ -76,9 +76,43 @@ CSV Operations:
 - **csv_file_load(schema, table, file_path, action="insert")**
 - **csv_url_load(schema, table, csv_url, action="insert")**
 
+Users and Roles:
+
+- **add_user(role id, username, password, active=True)**
+- **add_role(name, permission)**
+- **alter_user(role, username, password, active=True)**
+- **alter_role(id, permission)**
+- **drop_role(id)**
+- **drop_user(username)**
+- **user_info(username)**
+- **list_roles()**
+- **list_users()**
+
+Clustering:
+
+- **add_node(name, host, port, subscriptions=None)**
+- **update_node(name, host, port, subscriptions=None)**
+- **remove_node(name)**
+- **cluster_status()**
+
+Registration:
+
+- **registration_info()**
+- **get_fingerprint()**
+- **set_license(key, company)**
+
+Utilities:
+
+- **delete_files_before(schema, table, date)**
+- **export_local(path, search_operation, search_attribute=None, search_value=None, hash_values=None, sql=None, format="json")**
+- **export_to_s3(aws_access_key_id, aws_secret_access_key, bucket, key, search_operation, search_attribute=None, search_value=None, hash_value=None, sql=None, format="json")**
+- **read_log(limit=1000, start=0, from_date=None, to_date=None, order="desc")**
+- **system_information()**
+
 Jobs:
 
 - **get_job(id)**
+- **search_jobs_by_start_date(from_date, to_date)**
 
 ---
 
@@ -157,6 +191,39 @@ CSV Operations:
 - **_csv_data_load(schema, table, path, action="insert")**
 - **_csv_file_load(schema, table, file_path, action="insert")**
 - **_csv_url_load(schema, table, csv_url, action="insert")**
+
+Users and Roles:
+
+- **_add_user(role id, username, password, active=True)**
+- **_add_role(name, permission)**
+- **_alter_user(role, username, password, active=True)**
+- **_alter_role(id, permission)**
+- **_drop_role(id)**
+- **_drop_user(username)**
+- **_user_info(username)**
+- **_list_roles()**
+- **_list_users()**
+
+Clustering:
+
+- **_add_node(name, host, port, subscriptions)**
+- **_update_node(name, host, port, subscriptions)**
+- **_remove_node(name)**
+- **_cluster_status()**
+
+Registration:
+
+- **_registration_info()**
+- **_get_fingerprint()**
+- **_set_license(key, company)**
+
+Utilities:
+
+- **_delete_files_before(schema, table, date)**
+- **_export_local(path, search_operation, search_attribute=None, search_value=None, hash_values=None, sql=None, format="json")**
+- **_export_to_s3(aws_access_key_id, aws_secret_access_key, bucket, key, search_operation, search_attribute=None, search_value=None, hash_value=None, sql=None,, format="json")**
+- **_read_log(limit=100, start=0, from=None, until=None, order="desc")**
+- **_system_information()**
 
 Jobs:
 
