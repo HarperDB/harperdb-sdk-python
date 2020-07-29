@@ -397,15 +397,15 @@ class HarperDBBase():
             limit=1000,
             start=0,
             from_date=None,
-            until_date=None,
+            to_date=None,
             order='desc'):
-        # "from" is a keyword in python, so we use from_date and until_date
+        # "from" is a keyword in python, so we use from_date and to_date
         return self.__make_request({
             'operation': 'read_log',
             'limit': limit,
             'start': start,
             'from': from_date,
-            'until': until_date,
+            'until': to_date,
             'order': order,
         })
 

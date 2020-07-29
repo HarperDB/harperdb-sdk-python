@@ -90,7 +90,7 @@ class HarperDB(HarperDBBase):
         - read_log(limit=1000,
                    start=0,
                    from_date=None,
-                   until_date=None,
+                   to_date=None,
                    order="desc")
         - system_information()
       Jobs:

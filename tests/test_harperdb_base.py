@@ -1223,7 +1223,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
                 limit=spec['limit'],
                 start=spec['start'],
                 from_date=spec['from'],
-                until_date=spec['until'],
+                to_date=spec['until'],
                 order=spec['order']),
             self.READ_LOG)
         self.assertLastRequestMatchesSpec(spec)
