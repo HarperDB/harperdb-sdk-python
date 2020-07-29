@@ -12,11 +12,6 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         """
         self.db = harperdb.HarperDBBase(self.URL)
 
-    def tearDown(self):
-        """ This method is called after each test.
-        """
-        responses.reset()
-
     @unittest.mock.patch('base64.b64encode')
     def test_create_harperdb_base_with_kwargs(self, mock_b64encode):
         """ Create an instance of HarperDBBase with keyword args.

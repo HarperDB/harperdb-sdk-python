@@ -12,11 +12,6 @@ class TestHarperDBWrapper(harperdb_testcase.HarperDBTestCase):
         """
         self.db = harperdb.wrappers.HarperDBWrapper(self.URL)
 
-    def tearDown(self):
-        """ This method is called after each test.
-        """
-        responses.reset()
-
     def test_harperdb_is_subscriptable_by_schema_name(self):
         """ HarperDB is subscriptable by schema name.
         """
@@ -131,11 +126,6 @@ class TestHarperDBRecord(harperdb_testcase.HarperDBTestCase):
         self.record = harperdb.wrappers.HarperDBRecord(
             table=self.table,
             hash_value=self.RECORDS[0]['id'])
-
-    def tearDown(self):
-        """ This method is called after each test.
-        """
-        responses.reset()
 
     def test_create_harperdbrecord_with_kwargs(self):
         """ Create an instance of HarperDBTable with keyowrd args.
@@ -299,11 +289,6 @@ class TestHarperDBSchema(harperdb_testcase.HarperDBTestCase):
         self.schema = harperdb.wrappers.HarperDBSchema(
             name='test_schema_1',
             database=self.db)
-
-    def tearDown(self):
-        """ This method is called after each test.
-        """
-        responses.reset()
 
     def test_create_harperdbschema_with_kwargs(self):
         """ Create an instance of HarperDBSchema with keyword args.
@@ -492,11 +477,6 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
             name=self.DESCRIBE_TABLE['name'],
             schema=self.schema,
             hash_attribute='id')
-
-    def tearDown(self):
-        """ This method is called after each test.
-        """
-        responses.reset()
 
     @responses.activate
     def test_create_harperdbtable_with_kwargs(self):

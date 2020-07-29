@@ -505,6 +505,11 @@ class HarperDBTestCase(unittest.TestCase):
         {},
     ]
 
+    def tearDown(self):
+        """ This method is called after each test.
+        """
+        responses.reset()
+
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made
         matches spec.
