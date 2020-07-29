@@ -392,6 +392,28 @@ class HarperDBBase():
         call['search_operation'] = search_operation
         return self.__make_request(call)
 
+    def _read_log(
+            self,
+            limit=1000,
+            start=0,
+            from_date=None,
+            until_date=None,
+            order='desc'):
+        # "from" is a keyword in python, so we use from_date and until_date
+        return self.__make_request({
+            'operation': 'read_log',
+            'limit': limit,
+            'start': start,
+            'from': from_date,
+            'until': until_date,
+            'order': order,
+        })
+
+    def _system_information(self):
+        return self.__make_request({
+            'operation': 'system_information',
+        })
+
     # Jobs
 
     def _get_job(self, id):
