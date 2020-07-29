@@ -483,6 +483,24 @@ class HarperDBTestCase(unittest.TestCase):
     SET_LICENSE = {
         "message": "success"
     }
+    READ_LOG = {
+        'file': [
+            {
+                'level': 'LEVEL',
+                'message': 'MESSAGE',
+                'timestamp': '2020-01-01T00:00:00.000Z'
+            },
+        ],
+    }
+    SYSTEM_INFORMATION = {
+        "system": {},
+        "time": {},
+        "cpu": {},
+        "memory": {},
+        "disk": {},
+        "network": {},
+        "harperdb_processes": {}
+    }
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

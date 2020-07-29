@@ -1160,3 +1160,65 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 3)
+
+    @responses.activate
+    def test_read_log(self):
+        """ Read the server log.
+        """
+        spec = {
+            'operation': 'read_log',
+            'limit': 1000,
+            'start': 0,
+            'from': None,
+            'until': None,
+            'order': 'desc'
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.READ_LOG,
+            status=200)
+
+        self.assertEqual(self.db._read_log(), self.READ_LOG)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+        # test keyword args
+        spec = {
+            'operation': 'read_log',
+            'limit': 1001,
+            'start': 1,
+            'from': "2020-01-01",
+            'until': "2020-02-01",
+            'order': 'asc'
+        }
+
+        self.assertEqual(
+            self.db._read_log(
+                limit=spec['limit'],
+                start=spec['start'],
+                from_date=spec['from'],
+                until_date=spec['until'],
+                order=spec['order']),
+            self.READ_LOG)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 2)
+
+    @responses.activate
+    def test_system_information(self):
+        """ Retrieve system information.
+        """
+        spec = {
+            'operation': 'system_information',
+        }
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SYSTEM_INFORMATION,
+            status=200)
+
+        self.assertEqual(
+            self.db._system_information(),
+            self.SYSTEM_INFORMATION)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
