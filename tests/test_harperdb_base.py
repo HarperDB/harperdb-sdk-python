@@ -402,15 +402,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
     def test_csv_data_load(self):
         """ Records are inserted from a CSV file path.
         """
-        # define the expected JSON body in POST request
-        with open('tests/test.csv') as csv_file:
-            csv_string = csv_file.read()
         spec = {
             'operation': 'csv_data_load',
             'action': 'insert',
             'schema': 'test_schema',
             'table': 'test_table',
-            'data': csv_string,
+            'data': self.CSV_STRING,
         }
         # mock the server response
         responses.add(
@@ -432,15 +429,12 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
     def test_csv_data_load_update(self):
         """ Records are updated from a CSV file path.
         """
-        # define the expected JSON body in POST request
-        with open('tests/test.csv') as csv_file:
-            csv_string = csv_file.read()
         spec = {
             'operation': 'csv_data_load',
             'action': 'update',
             'schema': 'test_schema',
             'table': 'test_table',
-            'data': csv_string,
+            'data': self.CSV_STRING,
         }
         # mock the server response
         responses.add(
@@ -481,7 +475,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.db._csv_file_load(
                 schema=spec['schema'],
                 table=spec['table'],
-                file_path='path/to/file/on/host.csv'),
+                file_path=spec['file_path']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
@@ -508,7 +502,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.db._csv_file_load(
                 schema=spec['schema'],
                 table=spec['table'],
-                file_path='path/to/file/on/host.csv',
+                file_path=spec['file_path'],
                 action='update'),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
@@ -536,7 +530,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.db._csv_url_load(
                 schema=spec['schema'],
                 table=spec['table'],
-                csv_url='example.com/test.csv'),
+                csv_url=spec['csv_url']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
@@ -563,7 +557,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
             self.db._csv_url_load(
                 schema=spec['schema'],
                 table=spec['table'],
-                csv_url='example.com/test.csv',
+                csv_url=spec['csv_url'],
                 action='update'),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
@@ -1049,45 +1043,38 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
+                path=spec['path'],
                 hash_values=['uniqueHash']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 1)
 
-        spec = {
-            'operation': 'export_local',
-            'format': 'csv',
-            'path': 'path/to/data',
-            'search_operation': {
-                'operation': 'search_by_value',
-                'search_attribute': 'pi',
-                'search_value': 3.14,
-            },
+        # test keyword args
+        spec['format'] = 'csv'
+        spec['search_operation'] = {
+            'operation': 'search_by_value',
+            'search_attribute': 'pi',
+            'search_value': 3.14,
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
+                path=spec['path'],
                 search_attribute='pi',
                 search_value=3.14,
                 format='csv'),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 2)
-
-        spec = {
-            'operation': 'export_local',
-            'format': 'json',
-            'path': 'path/to/data',
-            'search_operation': {
-                'operation': 'sql',
-                'sql': 'my SQL string',
-            },
+        # more keyword args
+        spec['format'] = 'json'
+        spec['search_operation'] = {
+            'operation': 'sql',
+            'sql': 'my SQL string',
         }
         self.assertEqual(
             self.db._export_local(
-                path='path/to/data',
-                sql='my SQL string'),
+                path=spec['path'],
+                sql=spec['search_operation']['sql']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 3)
@@ -1176,7 +1163,7 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
                 aws_secret_access_key='mySecretKey',
                 bucket='myBucket',
                 key='KEY',
-                sql='my SQL string'),
+                sql=spec['search_operation']['sql']),
             self.START_JOB)
         self.assertLastRequestMatchesSpec(spec)
         self.assertEqual(len(responses.calls), 3)

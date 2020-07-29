@@ -504,6 +504,8 @@ class HarperDBTestCase(unittest.TestCase):
     SEARCH_JOB = [
         {},
     ]
+    with open('tests/test.csv') as csv_file:
+        CSV_STRING = csv_file.read()
 
     def tearDown(self):
         """ This method is called after each test.

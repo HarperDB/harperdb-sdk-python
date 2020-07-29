@@ -2,13 +2,15 @@ import base64
 import json
 import requests
 
-from .exceptions import *
+from .exceptions import HarperDBError
 
 
 class HarperDBBase():
 
     """ Extensible base class implements HarperDB API functions.
     """
+
+    ERROR_HASH = 'Hash value \"{}\" not found'
 
     def __init__(self, url, username=None, password=None, timeout=10):
         self.url = url

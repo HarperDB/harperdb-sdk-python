@@ -1,7 +1,8 @@
 import csv
 import datetime
 
-from .harperdb_base import *
+from .exceptions import HarperDBError
+from .harperdb_base import HarperDBBase, HarperDBError
 
 
 class HarperDBWrapper(HarperDBBase):
@@ -232,7 +233,7 @@ class HarperDBRecord():
             # HarperDB returns a list of records, empty if none found
             record = records[0]
         except IndexError:
-            raise HarperDBError('Hash value \"{}\" not found'.format(
+            raise HarperDBError(HarperDBBase.ERROR_HASH.format(
                 self._hash_value))
         return record['__createdtime__']
 
@@ -246,7 +247,7 @@ class HarperDBRecord():
             # HarperDB returns a list of records, empty if none found
             record = records[0]
         except IndexError:
-            raise HarperDBError('Hash value \"{}\" not found'.format(
+            raise HarperDBError(HarperDBBase.ERROR_HASH.format(
                 self._hash_value))
         return record['__updatedtime__']
 
@@ -365,7 +366,7 @@ class HarperDBTable():
             table=self.name,
             hash_values=[key])
         if response['skipped_hashes']:
-            raise HarperDBError('Hash value \"{}\" not found'.format(key))
+            raise HarperDBError(HarperDBBase.ERROR_HASH.format(key))
 
     def __len__(self):
         table = self.schema.database._describe_table(
@@ -382,8 +383,7 @@ class HarperDBTable():
             table=self.name,
             hash_values=[hash_value])
         if response['skipped_hashes']:
-            raise HarperDBError(
-                'Hash value \"{}\" not found'.format(hash_value))
+            raise HarperDBError(HarperDBBase.ERROR_HASH.format(hash_value))
 
     def drop(self):
         """ Drop this table.
