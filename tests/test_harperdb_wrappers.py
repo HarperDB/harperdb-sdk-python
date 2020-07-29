@@ -730,7 +730,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         })
         self.assertEqual(len(responses.calls), 2)
         # update a record using its hash value
-        updated_record = self.table.upsert({
+        self.table.upsert({
             self.table.hash_attribute: record._hash_value,
             'name': 'FOO',
         })
@@ -849,7 +849,7 @@ class TestHarperDBTable(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(len(responses.calls), 1)
 
         # one record is inserted, one is updated
-        records = self.table.upsert_from_csv('tests/test.csv')
+        self.table.upsert_from_csv('tests/test.csv')
         self.assertEqual(len(responses.calls), 3)
         self.assertLastRequestMatchesSpec({
             'operation': 'update',

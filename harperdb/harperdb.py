@@ -1,4 +1,4 @@
-from .harperdb_base import *
+from .harperdb_base import HarperDBBase
 
 
 class HarperDB(HarperDBBase):
