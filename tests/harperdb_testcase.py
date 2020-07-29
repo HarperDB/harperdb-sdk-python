@@ -501,6 +501,9 @@ class HarperDBTestCase(unittest.TestCase):
         "network": {},
         "harperdb_processes": {}
     }
+    SEARCH_JOB = [
+        {},
+    ]
 
     def assertLastRequestMatchesSpec(self, spec):
         """ Helper method to assert that the body of the last request made

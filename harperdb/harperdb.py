@@ -95,6 +95,7 @@ class HarperDB(HarperDBBase):
         - system_information()
       Jobs:
         - get_job(id)
+        - search_jobs_by_start_date(from_date, to_date)
     """
 
     def __init__(self, *args, **kwargs):
@@ -117,6 +118,7 @@ class HarperDB(HarperDBBase):
         self.csv_file_load = self._csv_file_load
         self.csv_url_load = self._csv_url_load
         self.get_job = self._get_job
+        self.search_jobs_by_start_date = self._search_jobs_by_start_date
         self.add_user = self._add_user
         self.add_role = self._add_role
         self.alter_user = self._alter_user

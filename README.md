@@ -112,6 +112,7 @@ Utilities:
 Jobs:
 
 - **get_job(id)**
+- **search_jobs_by_start_date(from_date, to_date)**
 
 ---
 

@@ -421,3 +421,10 @@ class HarperDBBase():
             'operation': 'get_job',
             'id': id,
         })
+
+    def _search_jobs_by_start_date(self, from_date, to_date):
+        return self.__make_request({
+            'operation': 'search_jobs_by_start_date',
+            'from_date': from_date,
+            'to_date': to_date,
+        })

@@ -596,6 +596,31 @@ class TestHarperDBBase(harperdb_testcase.HarperDBTestCase):
         self.assertEqual(len(responses.calls), 1)
 
     @responses.activate
+    def test_search_jobs_by_start_date(self):
+        """ Get an array of jobs by date range.
+        """
+        spec = {
+            'operation': 'search_jobs_by_start_date',
+            'from_date': '2020-01-01',
+            'to_date': '2020-02-01',
+        }
+        # mock the server response
+        responses.add(
+            'POST',
+            self.URL,
+            json=self.SEARCH_JOB,
+            status=200)
+
+        self.assertEqual(
+            self.db._search_jobs_by_start_date(
+                from_date=spec['from_date'],
+                to_date=spec['to_date']
+            ),
+            self.SEARCH_JOB)
+        self.assertLastRequestMatchesSpec(spec)
+        self.assertEqual(len(responses.calls), 1)
+
+    @responses.activate
     def test_add_user(self):
         """ Add a user.
         """

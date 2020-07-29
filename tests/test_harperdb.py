@@ -51,3 +51,4 @@ class TestHarperDB(harperdb_testcase.HarperDBTestCase):
         db.export_to_s3
         db.read_log
         db.system_information
+        db.search_jobs_by_start_date
