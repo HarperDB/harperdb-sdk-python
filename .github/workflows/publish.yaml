@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - "master"
+name: Publish SDK
+jobs:
+  publishStageStudio:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+    - name: Run tests
+      run: |
+        #!/bin/bash
+
+        python3 -m pytest tests/
+    - name: Build packages
+      run: |
+        #!/bin/bash
+
+        python3 setup.py sdist bdist_wheel
+    - name: Setup Node
+      run: |
+        #!/bin/bash
+
+        python3 -m twine upload -u harperdb -p ${{secrets.SDK_PUBLISH_PASSWORD}} dist/*
